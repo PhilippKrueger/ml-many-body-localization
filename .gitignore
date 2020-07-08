@@ -1,4 +1,11 @@
+.idea
 comp_meth_2020-master-2_exact_diagonalization/comp_meth_2020-master-2_exact_diagonalization/
 comp_meth_2020-master-2_exact_diagonalization/comp_meth_2020-master-2_exact_diagonalization/2_exact_diagonalization/.ipynb_checkpoints/sol4_simple_ED-checkpoint.ipynb
 comp_meth_2020-master-2_exact_diagonalization/comp_meth_2020-master-2_exact_diagonalization/2_exact_diagonalization/.ipynb_checkpoints/sol5_1_area_law-checkpoint.ipynb
 comp_meth_2020-master-2_exact_diagonalization/comp_meth_2020-master-2_exact_diagonalization/2_exact_diagonalization/.ipynb_checkpoints/sol5_2_ED_conserve-checkpoint.ipynb
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.gz
