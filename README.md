@@ -12,7 +12,7 @@
 Use exact diagonalization to obtain all eigenstates of the the Heisenberg model with a
 random field, 
 <img src="https://render.githubusercontent.com/render/math?math=H=J\sum_i \vec{S}_i\cdot\vec{S}_{i%2B1}-\sum_ih_iS_i^z">
-, where the values of the field <img src="https://render.githubusercontent.com/render/math?math=H=h_i \in \left[-W, W\right]">
+, where the values of the field <img src="https://render.githubusercontent.com/render/math?math=h_i \in \left[-W, W\right]">
  are
 chosen from a uniform random distribution with a “disorder strength” W (Use moderate
 system sizes L = 10, 12). The exciting property of this model is that it is believed to

@@ -36,41 +36,69 @@
 
 \begin{document}
 
+%\include{guidelines}
 
-\title{Project title}
+\title{Machine Learning of Many Body Localization}
 
-\author{Your Name}
+\author{Philipp Krüger}
 
 \date{\today}% It is always \today, today,
              %  but any date may be explicitly specified
 
 \begin{abstract}
 A paper usually includes an abstract, a concise summary of the work covered at length in the main body of the paper. Please also write a short abstract of your project.
+%todo About 5% of article length & < 500 words
 \end{abstract}
 
 
 \maketitle
 
+\section{Introduction}%todo: Action title
 
-\section{Guidelines}
+Introduce concepts: Exact Diagonalization, areal Density Matrix, Neural Network
 
-Please write a short paper about your project. There are no strict length limits, but please write \textbf{at least two pages in the layout of this template} (including figures, excluding references and code listings). Please structure your paper in a scientific way, and include your references and your code. There are \LaTeX packages you can use to preserve the indentation of your code, e.g. the \texttt{listings} package which is demonstrated in the Appendix~\ref{app:codes}.
+Is scaling important?
 
-This sample document makes use of of REV\TeX~4.2, therefore you will need to install it to be able to compile this document yourself. Further information can be found in the REV\TeX~4.2
-documentation included in the distribution or available at
-\url{http://journals.aps.org/revtex/}.
+Review Literature on task
 
+\section{Materials and Methods}%todo: Action title
 
-\subsection{Example citations}
-By default, citations are numerical\cite{epr}, some more citations~\cite{feyn54,Bire82,Berman1983,witten2001,Davies1998}. 
+Explain Flow with figure
 
-\subsection{Exampe figure}
-Including and referring to figures is as usual, see for instance Fig.~\ref{fig:example}
-\begin{figure}
-\includegraphics[width=0.99\linewidth]{cartoon.png}
-\caption{Example of a figure~\cite{Orus2013}.}
-\label{fig:example}
+\begin{figure}[h!]
+	\includegraphics[width=0.99\linewidth]{figures/flowchart.jpg}
+	\caption{Example of a figure~\cite{Orus2013}.}
+	\label{fig:example}
 \end{figure}
+
+Fig.~\ref{fig:example}
+
+Explain metrics and errors and why they are used. Which ml models are used and why?
+
+\section{Results}%todo: Action title
+
+Plots: 
+
+The training set was sufficiently large enough
+
+We only need M Eigenstates
+
+This is how corresponding density matrices look like
+
+This will be our parameter space for n, L
+
+Those are our $W_c$ depending on n, L.
+
+\section{Conclusion}%todo: Action title
+
+$W_c$ depends on n, L (yes/no).
+
+$W_c$ prediction coincides with the expectation (yes/no)
+
+$W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
+
+Citations are numerical\cite{epr}, some more citations~\cite{feyn54,Bire82,Berman1983,witten2001,Davies1998}. 
+
 
 \bibliography{bibsamp}% Produces the bibliography via BibTeX.
 
@@ -84,52 +112,13 @@ Please copy your code in the appendix.
 \begin{lstlisting}[language=Python]
 """
 
-Module to generate the Hamiltonian of the transverse field Ising model.
-
-H = -J sum_i sigma^x_i sigma^x_{i+1} - g sum_i sigma^z i.
-
-Used in the solution of exercise 5.1
+Description
 
 """
 
 import numpy as np
-import scipy
-from scipy import sparse
-import scipy.sparse.linalg
-import matplotlib.pyplot as plt
 
-Id = sparse.csr_matrix(np.eye(2))
-Sx = sparse.csr_matrix([[0., 1.], [1., 0.]])
-Sz = sparse.csr_matrix([[1., 0.], [0., -1.]])
-Splus = sparse.csr_matrix([[0., 1.], [0., 0.]])
-Sminus = sparse.csr_matrix([[0., 0.], [1., 0.]])
-
-
-def singesite_to_full(op, i, L):
-    op_list = [Id]*L  # = [Id, Id, Id ...] with L entries
-    op_list[i] = op
-    full = op_list[0]
-    for op_i in op_list[1:]:
-        full = sparse.kron(full, op_i, format="csr")
-    return full
-
-
-def gen_sx_list(L):
-    return [singesite_to_full(Sx, i, L) for i in range(L)]
-
-
-def gen_sz_list(L):
-    return [singesite_to_full(Sz, i, L) for i in range(L)]
-
-
-def gen_hamiltonian_periodic(sx_list, sz_list, g, J=1.):
-    """ assumes periodic boundery conditions """
-    L = len(sx_list)
-    H = sparse.csr_matrix((2**L, 2**L))
-    for j in range(L):
-        H = H - J *( sx_list[j] * sx_list[(j+1)%L])
-        H = H - g * sz_list[j]
-    return H
+code
 \end{lstlisting}
 \end{widetext}
 
