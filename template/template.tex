@@ -55,7 +55,33 @@ A paper usually includes an abstract, a concise summary of the work covered at l
 
 \section{Introduction}%todo: Action title
 
-Introduce concepts: Exact Diagonalization, areal Density Matrix, Neural Network
+Introduce concepts: Exact Diagonalization, 
+
+areal Density Matrix:
+\url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
+
+\begin{figure}[h!]
+	\includegraphics[width=0.99\linewidth]{figures/reduced_density_matrix.jpg}
+	\caption{Example of a figure~\cite{Orus2013}.}
+	\label{fig:adm}
+\end{figure}
+
+direct density matrix:
+(DOI: 10.1103/PhysRevB.99.054208 says 
+Instead of dividing the system into two subsystems A
+and B to calculate the reduced density matrix of an eigenstate rho a and using the entanglement spectrum as the training data set 34,35, we directly feed the
+probability density of the eigenstate psi i computed in the
+spin basis to the machines as the training data set. The
+reason for doing so is that, although by preprocessing
+the training data can reduce the dimension and filter out
+redundant information, useful information contained in
+the wavefunction of the entire system can also be lost.)
+
+Conclusion: => areal
+
+, Neural Network, CNN
+
+Outcome expectation: J<g: adiabatically connected to trivial state, J>g ordered phase
 
 Is scaling important?
 
@@ -75,17 +101,27 @@ Fig.~\ref{fig:example}
 
 Explain metrics and errors and why they are used. Which ml models are used and why?
 
+Hyperparameters? Amount of layers?
+
 \section{Results}%todo: Action title
 
-Plots: 
+\subsection{Generation of density matrix training set}
 
-The training set was sufficiently large enough
+Plots: 
+What is computationally realizable in 1h concerning time?
+The training set was sufficiently large enough 
 
 We only need M Eigenstates
 
 This is how corresponding density matrices look like
 
 This will be our parameter space for n, L
+
+\subsection{Prediction of extended vs localized phase}
+
+Training and testing scores
+
+\subsection{$W_c$ analysis}
 
 Those are our $W_c$ depending on n, L.
 
