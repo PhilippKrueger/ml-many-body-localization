@@ -1,4 +1,13 @@
-# Machine Learning of Many Body Localization (Exact diagonalization + Machine Learning)
+# Machine Learning of Many Body Localization
+
+**Instructions to replicate results**
+
+1. Clone the project.
+2. Install requirements.
+3. Run ``main.py``.
+4. Look for plots in the ``/results`` folder.
+
+**Original Task**:
 
 Use exact diagonalization to obtain all eigenstates of the the Heisenberg model with a
 random field, 
@@ -30,3 +39,12 @@ the results depend on system size L and block size n? At which
 <img src="https://render.githubusercontent.com/render/math?math=W_c ">
 do you expect the
 transition to occur?
+
+**Steps:**
+
+Implementation of the following functions:
+* Function: Generate random disorder strength using a uniform distribution
+* Function: Generate Hamiltonian from disorder strength and system size
+* Define and understand phase transition from extended phase to localized phase
+* 
+* Set up machine learning model
