@@ -18,7 +18,6 @@ chosen from a uniform random distribution with a “disorder strength” W (Use 
 system sizes L = 10, 12). The exciting property of this model is that it is believed to
 undergo a phase transition from an extended phase (small W) to a localized phase (large
 W). We will use ML to detect this transition: Pick a number of eigenstates that are
-3
 near energy <img src="https://render.githubusercontent.com/render/math?math=E = 0">
  and obtain the reduced density matrices 
  <img src="https://render.githubusercontent.com/render/math?math=\rho^A">
@@ -43,8 +42,16 @@ transition to occur?
 **Steps:**
 
 Implementation of the following functions:
-* Function: Generate random disorder strength using a uniform distribution
-* Function: Generate Hamiltonian from disorder strength and system size
-* Define and understand phase transition from extended phase to localized phase
-* 
-* Set up machine learning model
+1. Function: Generate random disorder strength using a uniform distribution
+2. Function: Generate Hamiltonian from disorder strength and system size
+3. Define and understand phase transition from extended phase to localized phase
+4. Function: Picks a number M of lowest eigenstates near Energy E = 0
+5. Function: Generate density matrix for an eigenstate
+6. Function: Visualize density matrices
+7. Function: Set up machine learning model that takes density matrices of different W as an input, 
+and predicts whether the state represents an extended or a localized phase.
+8. Function: Make predictions for different system sizes L and block sizes n.
+9. Function: Plot the predicitons over W.
+10. Function: Extract 
+<img src="https://render.githubusercontent.com/render/math?math=W_c ">
+from the data.
