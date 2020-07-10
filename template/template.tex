@@ -46,7 +46,7 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-A paper usually includes an abstract, a concise summary of the work covered at length in the main body of the paper. Please also write a short abstract of your project.
+Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases, was used to train a neural network to deduct the critical disorder strength for a phase transition. 
 %todo About 5% of article length & < 500 words
 \end{abstract}
 
@@ -55,7 +55,66 @@ A paper usually includes an abstract, a concise summary of the work covered at l
 
 \section{Introduction}%todo: Action title
 
+Review Literature on task
+
+Why is the topic interesting? => Finding Wc?
+
+\subsection{Hamiltonian of the Heisenberg model}
+
+What is it used for? With $J=1$, $h_i \in \left[-W, W\right]$
+
+\begin{equation}
+	H=\underbrace{J\sum_i \vec{S}_i\cdot\vec{S}_{i+1}}_{\text{Exchange Energy}}-\underbrace{\sum_ih_iS_i^z}_{\text{Random Field}}
+\end{equation}
+
+Outcome expectation: 
+
+In the ergodic phase (delocalized phase) $h<h_c$, the many-body eigenstates
+are thermal,20–23 so the isolated quantum system can relax to
+thermal equilibrium under the dynamics due to its Hamiltonian.
+In the thermodynamic limit $L\rightarrow\infty$, the system thus
+successfully serves as its own heat bath in the ergodic phase.
+In a thermal eigenstate, the reduced density operator of a
+finite subsystem converges to the equilibrium thermal distribution
+for $L\rightarrow\infty$. Thus the entanglement entropy between a
+finite subsystem and the remainder of the system is, for  $L\rightarrow\infty$, the thermal equilibrium entropy of the subsystem. At
+nonzero temperature, this entanglement entropy is extensive,
+proportional to the number of degrees of freedom in the subsystem.
+
+
+In the many-body localized phase $h>h_c$, on the other
+hand, the many-body eigenstates are not thermal:2 the
+“eigenstate-thermalization hypothesis”20–23 is false in the
+localized phase. Thus in the localized phase, the isolated
+quantum system does not relax to thermal equilibrium
+under the dynamics of its Hamiltonian. The infinite system
+fails to be a heat bath that can equilibrate itself. It is a
+“glass” whose local configurations at all times are set by the
+initial conditions. Here the eigenstates do not have extensive
+entanglement, making them accessible to density-matrixrenormalization-group–type
+numerical techniques.5 A limit
+of the localized phase that is simple is J= 0 with $h>0$. Here
+the spins do not interact, all that happens dynamically is
+local Larmor precession of the spins about their localrandom
+fields. No transport of energy or spin happens and
+the many-body eigenstates are simply product states with
+each spin either “up” or “down.”
+\url{https://doi.org/10.1103/PhysRevB.82.174411}
+
+
+non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis
+\url{https://arxiv.org/pdf/1610.03042.pdf}
+
+
+J<g: (large W) localized phase (adiabatically connected to trivial state), J>g extended phase (small W) (ordered??)
+
+Is scaling important?
+
+\subsection{Exact Diagonalization}
+
 Introduce concepts: Exact Diagonalization, 
+
+\subsection{Areal (reduced??) Density Matrix}
 
 areal Density Matrix:
 \url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
@@ -65,6 +124,8 @@ areal Density Matrix:
 	\caption{Example of a figure~\cite{Orus2013}.}
 	\label{fig:adm}
 \end{figure}
+
+vs
 
 direct density matrix:
 (DOI: 10.1103/PhysRevB.99.054208 says 
@@ -79,15 +140,17 @@ the wavefunction of the entire system can also be lost.)
 
 Conclusion: => areal
 
-, Neural Network, CNN
+\subsection{Neural Networks and Convolutional Neural Networks}
 
-Outcome expectation: J<g: adiabatically connected to trivial state, J>g ordered phase
+Neural Network, CNN
 
-Is scaling important?
 
-Review Literature on task
+
+
 
 \section{Materials and Methods}%todo: Action title
+
+\subsection{Code Protocol}
 
 Explain Flow with figure
 
@@ -98,6 +161,12 @@ Explain Flow with figure
 \end{figure}
 
 Fig.~\ref{fig:example}
+
+\subsection{Machine Learning Models and Error Metrics}
+
+Loss: SparseCategoricalCrossentropy from \url{https://keras.io/api/losses/}
+
+Optimizer: Adam
 
 Explain metrics and errors and why they are used. Which ml models are used and why?
 

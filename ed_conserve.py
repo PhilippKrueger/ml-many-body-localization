@@ -113,3 +113,34 @@ def calc_H(N, J, g):
         H[qn] = H_block
     print("done", flush=True)
     return H
+
+def calc_H_random_field(N, J, Wmax):
+    """Determine the blocks of the Hamiltonian as scipy.sparse.csr_matrix."""
+    print("Generating Hamiltonian ... ", end="", flush=True)
+    basis, ind_in_basis = calc_basis(N)
+    H = {}
+    for qn in basis:
+        M = len(basis[qn])
+        H_block_data = []
+        H_block_inds = []
+        a = 0
+        for sa, Ra in basis[qn]:
+            H_block_data.append(-np.random.uniform(-Wmax, Wmax) * (-N + 2*count_ones(sa, N)))
+            H_block_inds.append((a, a))
+            for i in range(N):
+                sb, l = get_representative(flip(sa, i, N), N)
+                if sb in ind_in_basis[qn]:
+                    b = ind_in_basis[qn][sb]
+                    Rb = basis[qn][b][1]
+                    k = qn*2*np.pi/N
+                    H_block_data.append(-J*np.exp(-1j*k*l)*np.sqrt(Ra/Rb))
+                    H_block_inds.append((b, a))
+                # else: flipped state incompatible with the k value, |b(k)> is zero
+            a += 1
+        H_block_inds = np.array(H_block_inds)
+        H_block_data = np.array(H_block_data)
+        H_block = scipy.sparse.csr_matrix((H_block_data, (H_block_inds[:, 0], H_block_inds[:, 1])),
+                                          shape=(M,M),dtype=np.complex)
+        H[qn] = H_block
+    print("done", flush=True)
+    return H
