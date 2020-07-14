@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split
 import pickle
 from tensorflow.keras import layers, models, losses, callbacks
+from tensorflow.keras.utils import plot_model
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as k
@@ -40,23 +41,32 @@ class ModelTrainer:
     def __init__(self, x, y, N):
         self.N = N
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3, random_state=42)
-        self.model = self.generate_model()
+        self.model = self.generate_model_sparse()
 
     def train_test_split(self):
         pass
 
     def generate_model(self):
         model = models.Sequential()
-        print()
-        model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
-        model.add(layers.MaxPooling2D((2, 2)))
         model.add(layers.Flatten())
         model.add(layers.Dense(64, activation='relu'))
         model.add(layers.Dense(128, activation='relu'))
         model.add(layers.Dense(64, activation='relu'))
         model.add(layers.Dense(32, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
-        model.compile(optimizer='rmsprop', loss='mae', metrics=['mean_absolute_error', 'mean_squared_error', 'accuracy'])
+        model.compile(optimizer='rmsprop', loss='mae', metrics=['accuracy'])#loss used to be mae loss # metrics: 'mean_absolute_error', 'mean_squared_error',
+        return model
+
+    def generate_model_sparse(self):
+        model = models.Sequential()
+        # if self.N != 12:
+        # model.add(layers.Conv2D(32, (6, 6), activation='relu', input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
+        # model.add(layers.MaxPooling2D((4, 4)))
+        model.add(layers.Flatten())
+        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+        model.add(layers.Dense(1, activation='sigmoid'))
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])#loss used to be mae loss # metrics: 'mean_absolute_error', 'mean_squared_error',
         return model
 
     def score(self):
@@ -69,7 +79,7 @@ class ModelTrainer:
         history = self.model.fit(self.X_train, self.y_train,
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=1,
+                       verbose=2,
                        validation_data=(self.X_test, self.y_test)
                        )
         return history
@@ -102,15 +112,16 @@ def train_save_model(Ns, batch_size, epochs):
                                           epochs=epochs)
         model_trainer.training_history(history)
         model_trainer.save_model("pickled/N"+str(N)+"_Model")
+        plot_model(model_trainer.model, to_file="results/N"+str(N)+"_model_visualization.png")
     print("--- Model training lasted %s seconds ---" % (time.time() - start_time))
     pass
 
 
 if __name__ == "__main__":
     # Ns = [10, 11, 12]
-    Ns = [12]
+    Ns = [9, 10, 11, 12]
     train_save_model(Ns,
-                     batch_size=32,
+                     batch_size=70,
                      epochs=40)
 
     # N = 12 Model training lasted 537.23 seconds

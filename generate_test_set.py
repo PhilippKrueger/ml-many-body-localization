@@ -13,7 +13,7 @@ def generate_test_set(Ns, W_max, repetitions):
 
 
 if __name__ == "__main__":
-    Ns = [12]
+    Ns = [9, 10, 11, 12]
     W_max = np.arange(0., 4.0, 0.05)
     repetitions = 1
     generate_test_set(Ns, W_max, repetitions)

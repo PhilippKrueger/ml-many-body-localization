@@ -12,8 +12,12 @@ def preprocess_test_data(path):
     return X, W
 
 
-def logistic(x, a, b):
-    return 1 / (1 + np.exp(-a * (x - b)))
+def logistic(x, a):
+    return 1 / (1 + np.exp(-100 * (x - a)))
+
+
+def heaviside(x, a):
+    return 0.5*np.sign(x-a)+0.5
 
 
 def load_model(path):
@@ -33,12 +37,12 @@ def get_wc(N, W_max):
     ax1 = plt.scatter(W_max, state_prediction)
     ax1 = plt.plot(W_max, logistic(W_max, *popt), 'k')
 
-    plt.title('Phase prediction $N = $' + str(N) + ", $W_c = $" + "{0:.3g}".format(popt[1]))
+    plt.title('Phase prediction $N = $' + str(N) + ", $W_c = $" + "{0:.3g}".format(popt[0]))
     plt.ylabel('Probability of localized phase')
     plt.xlabel('$W_{max}$')
     plt.legend(['Logistic fit', 'Predicted phase'], loc='upper left')
     plt.savefig('results/N' + str(N) + '_predict_wc.pdf')
-    return popt[1], N, np.shape(X[0])[0]
+    return popt[0], N, np.shape(X[0])[0]
 
 
 def plot_wc_dependencies(Ns, W_max):
@@ -51,18 +55,18 @@ def plot_wc_dependencies(Ns, W_max):
     plt.title("$W_c$ dependency on system size L")
     plt.ylabel('Critical maximum disorder strength $W_c$')
     plt.xlabel('System size $L$')
-    ax1 = plt.plot(Wc_dependencies[:, 1], Wc_dependencies[:, 0])
+    ax1 = plt.scatter(Wc_dependencies[:, 1], Wc_dependencies[:, 0])
     plt.savefig('results/Wc_L_dependency.pdf')
 
     fig, ax1 = plt.subplots()
     plt.title("$W_c$ dependency on block size n")
     plt.ylabel('Critical maximum disorder strength $W_c$')
     plt.xlabel('Block size $n$')
-    ax1 = plt.plot(Wc_dependencies[:, 2], Wc_dependencies[:, 0])
+    ax1 = plt.scatter(Wc_dependencies[:, 2], Wc_dependencies[:, 0])
     plt.savefig('results/Wc_n_dependency.pdf')
 
 
 if __name__ == "__main__":
-    Ns = [10, 11, 12]
+    Ns = [9, 10, 11, 12]
     W_max = np.arange(0., 4.0, 0.05)
     plot_wc_dependencies(Ns, W_max)

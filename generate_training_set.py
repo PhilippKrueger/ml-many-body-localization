@@ -17,14 +17,14 @@ def save_groundstate_figures(N, erogdic, localized):
     fig, ax1 = plt.subplots()
     pos = ax1.imshow(np.real(erogdic[0]))
     fig.colorbar(pos, ax=ax1)
-    plt.title("Groundstate for $W_{max}=$"+str(erogdic[1])+" , $N = $"+str(N))
+    plt.title("Ground state for $W_{max}=$"+str(erogdic[1])+" , $N = $"+str(N))
     plt.savefig(
         "results/N" + str(N) + "_trainingset_groundstate_Wmax" + str(erogdic[1]) + ".pdf")
 
     fig, ax1 = plt.subplots()
     pos = ax1.imshow(np.real(localized[0]))
     fig.colorbar(pos, ax=ax1)
-    plt.title("Groundstate for $W_{max}=$" + str(erogdic[1]) + " , $N = $" + str(N))
+    plt.title("Ground state for $W_{max}=$" + str(erogdic[1]) + " , $N = $" + str(N))
     plt.savefig(
         "results/N" + str(N) + "_trainingset_groundstate_Wmax" + str(localized[1]) + ".pdf")
     pass
@@ -76,9 +76,9 @@ if __name__ == "__main__":
     # generate_training_set(Ns, Ws, repetitions)
 
 
-    Ns = [12]
+    Ns = [9, 10, 11, 12]
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 100
+    repetitions = 500 # 55 min
     generate_training_set(Ns, Ws, repetitions)
 
     # N=10 Training set generation lasted 80.94452285766602 seconds

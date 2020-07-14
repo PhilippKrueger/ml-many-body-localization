@@ -53,16 +53,18 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases, was used to train a neural network to deduct the critical disorder strength for a phase transition. 
-%todo About 5% of article length & < 500 words
+Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occured for all system sizes at $W_c = J$. 
+%todo W-c is the same for all system sizes?
 \end{abstract}
 
 
 \maketitle
 
-\section{Introduction}%todo: Action title
+\section{Introduction}
 
-Review Literature on task
+First, the physical model is introduced. Secondly, the concept of exact diagonalization is briefly presented. As we use the reduced density matrices as the feature for the neural network, we state briefly their derivation.
+
+Review Literature on task. How other people find $W_c$?
 
 Why is the topic interesting? => Finding Wc?
 
@@ -159,6 +161,22 @@ Neural Network, CNN
 
 \subsection{Code Protocol}
 
+\begin{enumerate}
+	\item Function: Generate random disorder strength using a uniform distribution
+	\item Function: Generate Hamiltonian from disorder strength and system size
+	\item Define and understand phase transition from extended phase to localized phase
+	\item Function: Picks a number M of lowest eigenstates near Energy E = 0
+	\item Function: Generate density matrix for an eigenstate
+	\item Function: Visualize density matrices
+	\item  Function: Set up machine learning model that takes density matrices of different W as an input, 
+	and predicts whether the state represents an extended or a localized phase.
+	\item Function: Make predictions for different system sizes L and block sizes n.
+	\item Function: Plot the predicitons over W.
+	\item Function: Extract $W_c$
+	from the data.
+\end{enumerate}
+
+
 Explain Flow with figure
 
 \begin{figure}[h!]
@@ -171,45 +189,58 @@ Fig.~\ref{fig:example}
 
 \subsection{Machine Learning Models and Error Metrics}
 
-Loss: SparseCategoricalCrossentropy from \url{https://keras.io/api/losses/}
+Two different approaches:
 
-Optimizer: Adam
+regression like: Optimizer RMSprop, Loss MAE
+
+classification focused: Optimizer Adam
+
+Loss: BinaryCrossentropy from \url{https://keras.io/api/losses/probabilistic_losses/#binary_crossentropy-function}:
+Computes the cross-entropy loss between true labels and predicted labels.
+
+Use this cross-entropy loss when there are only two label classes (assumed to be 0 and 1). For each example, there should be a single floating-point value per prediction.
+
+Optimizer: Stochastic Gradient Descent, Learning rate? Formula? Principle?
 
 Explain metrics and errors and why they are used. Which ml models are used and why?
 
-Hyperparameters? Amount of layers?
+Use drop out to reduce overfitting. Low sample size techniques:
 
 \section{Results}%todo: Action title
 
 \subsection{Generation of density matrix training set}
 
-Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 100. Measure of variation in the test set??
+Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 500. Measure of variation in the test set??
 
 \newpage
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N10_trainingset_groundstate_Wmax0.5.jpg}
-	\caption{Real part of the density matrix of an ergodic phase N = 10.}
-\end{figure}
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N11_trainingset_groundstate_Wmax0.5.jpg}
-	\caption{Real part of the density matrix of an ergodic phase N = 11.}
-\end{figure}
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N12_trainingset_groundstate_Wmax0.5.jpg}
-	\caption{Real part of the density matrix of an ergodic phase N = 12.}
-\end{figure}
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N10_trainingset_groundstate_Wmax8.0.jpg}
-	\caption{Real part of the density matrix of an localized phase N = 10.}
-\end{figure}
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N11_trainingset_groundstate_Wmax8.0.jpg}
-	\caption{Real part of the density matrix of an localized phase N = 11.}
-\end{figure}
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{../results/N12_trainingset_groundstate_Wmax8.0.jpg}
-	\caption{Real part of the density matrix of an localized phase N = 12.}
-\end{figure}
+\begin{figure*}[h!]
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N10_trainingset_groundstate_Wmax0.5.pdf}
+		\subcaption{Ergodic phase L = 10.}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax0.5.pdf}
+		\subcaption{Ergodic phase L = 11.}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N12_trainingset_groundstate_Wmax0.5.pdf}
+		\subcaption{Ergodic phase L = 12.}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N10_trainingset_groundstate_Wmax8.0.pdf}
+		\subcaption{Localized phase L = 10.}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax8.0.pdf}
+		\subcaption{Localized phase L = 11.}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N12_trainingset_groundstate_Wmax8.0.pdf}
+		\subcaption{Localized phase L = 12.}
+	\end{subfigure}
+	\caption{Real part of the density matrix of an ergodic/localized phase for different system sizes L.}
+\end{figure*}
+
 
 %\begin{figure}
 %	\begin{subfigure}[c]{0.2\textwidth}
@@ -238,24 +269,27 @@ This will be our parameter space for n, L
 
 Training and validation scores:
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.7\linewidth]{../results/N10_loss_epochs}
-\caption{}
-\label{fig:N10_loss_epochs}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/N11_loss_epochs}
-	\caption{}
-	\label{fig:N11_loss_epochs}
-\end{figure}
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/N12_loss_epochs}
-	\caption{}
-	\label{fig:N12_loss_epochs}
-\end{figure}
+\newpage
+\begin{figure*}[h!]
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N10_accuracy_loss_epochs}
+		\subcaption{$N=10$}
+		\label{fig:N10_accuracy_loss_epochs}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N11_accuracy_loss_epochs}
+		\subcaption{$N=11$}
+		\label{fig:N11_loss_epochs}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N12_accuracy_loss_epochs}
+		\subcaption{$N=12$}
+		\label{fig:N12_loss_epochs}
+	\end{subfigure}
+	\caption{Accuracy and loss of neuronal network plotted over training epochs.}
+\end{figure*}
+
+
 
 \subsection{$W_c$ analysis}
 
@@ -263,26 +297,25 @@ Training and validation scores:
 Now we generate testing set with $W_{max} \in \left[0,4\right]$. We suspect $W_c$ to be at 1 ??%todo
 We fit a logistic curve and extract $W_c$ as a parameter.
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/N10_predict_wc}
-	\caption{}
-	\label{fig:N10_predict_wc}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/N11_predict_wc}
-	\caption{}
-	\label{fig:N11_predict_wc}
-\end{figure}
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/N12_predict_wc}
-	\caption{}
-	\label{fig:N12_predict_wc}
-\end{figure}
+\newpage
+\begin{figure*}[h!]
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N10_predict_wc}
+		\subcaption{$N=10$}
+		\label{fig:N10_predict_wc}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N11_predict_wc}
+		\subcaption{$N=11$}
+		\label{fig:N11_predict_wc}
+	\end{subfigure}
+	\begin{subfigure}[c]{0.3\textwidth}
+		\includegraphics[width=\textwidth]{../results/N12_predict_wc}
+		\subcaption{$N=12$}
+		\label{fig:N12_predict_wc}
+	\end{subfigure}
+	\caption{Phase prediction with localized and ergodic phase defined as 1, 0.}
+\end{figure*}
 
 
 These are our $W_c$ depending on n, L.
