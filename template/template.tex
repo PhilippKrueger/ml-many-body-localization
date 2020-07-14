@@ -6,6 +6,13 @@
 \usepackage{hyperref}% add hypertext capabilities
 \usepackage{xcolor}
 
+%% Philipps stuff %%
+\usepackage{subcaption}
+\captionsetup[subfigure]{list=true, font=large, labelfont=bf, 
+	labelformat=brace, position=top}
+
+
+%% Code stuff %%
 \usepackage{listings} % insert code fragments
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -176,6 +183,47 @@ Hyperparameters? Amount of layers?
 
 \subsection{Generation of density matrix training set}
 
+Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 100. Measure of variation in the test set??
+
+\newpage
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N10_trainingset_groundstate_Wmax0.5.jpg}
+	\caption{Real part of the density matrix of an ergodic phase N = 10.}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N11_trainingset_groundstate_Wmax0.5.jpg}
+	\caption{Real part of the density matrix of an ergodic phase N = 11.}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N12_trainingset_groundstate_Wmax0.5.jpg}
+	\caption{Real part of the density matrix of an ergodic phase N = 12.}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N10_trainingset_groundstate_Wmax8.0.jpg}
+	\caption{Real part of the density matrix of an localized phase N = 10.}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N11_trainingset_groundstate_Wmax8.0.jpg}
+	\caption{Real part of the density matrix of an localized phase N = 11.}
+\end{figure}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{../results/N12_trainingset_groundstate_Wmax8.0.jpg}
+	\caption{Real part of the density matrix of an localized phase N = 12.}
+\end{figure}
+
+%\begin{figure}
+%	\begin{subfigure}[c]{0.2\textwidth}
+%			\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax0.5.jpg}
+%		\subcaption{}
+%	\end{subfigure}
+%	\begin{subfigure}[c]{0.2\textwidth}
+%		\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax8.0.jpg}
+%		\subcaption{}
+%	\end{subfigure}
+%	\caption{Zwei Bilder mit Subfigure nebeneinander}
+%\end{figure}
+
+
 Plots: 
 What is computationally realizable in 1h concerning time?
 The training set was sufficiently large enough 
@@ -188,11 +236,72 @@ This will be our parameter space for n, L
 
 \subsection{Prediction of extended vs localized phase}
 
-Training and testing scores
+Training and validation scores:
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\linewidth]{../results/N10_loss_epochs}
+\caption{}
+\label{fig:N10_loss_epochs}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/N11_loss_epochs}
+	\caption{}
+	\label{fig:N11_loss_epochs}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/N12_loss_epochs}
+	\caption{}
+	\label{fig:N12_loss_epochs}
+\end{figure}
 
 \subsection{$W_c$ analysis}
 
-Those are our $W_c$ depending on n, L.
+
+Now we generate testing set with $W_{max} \in \left[0,4\right]$. We suspect $W_c$ to be at 1 ??%todo
+We fit a logistic curve and extract $W_c$ as a parameter.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/N10_predict_wc}
+	\caption{}
+	\label{fig:N10_predict_wc}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/N11_predict_wc}
+	\caption{}
+	\label{fig:N11_predict_wc}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/N12_predict_wc}
+	\caption{}
+	\label{fig:N12_predict_wc}
+\end{figure}
+
+
+These are our $W_c$ depending on n, L.
+
+%todo: Plot with extracted $W_Cs$
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{../results/Wc_L_dependency}
+	\caption{}
+	\label{fig:Wc_L_dependency}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.7\linewidth]{../results/Wc_N_dependency}
+\caption{}
+\label{fig:Wc_N_dependency}
+\end{figure}
+
 
 \section{Conclusion}%todo: Action title
 

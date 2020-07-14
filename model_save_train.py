@@ -4,6 +4,7 @@ from tensorflow.keras import layers, models, losses, callbacks
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as k
+import time
 
 
 def load_pickle(filename, to_numeric=1):
@@ -16,16 +17,10 @@ def preprocess_training_data(path):
     data = load_pickle(path)
     X = data
     X = [item[0] for item in X]
-    # print(np.shape(X))
     X = np.reshape(X, (np.shape(X)[0], np.shape(X)[1], np.shape(X)[2], 1))
     X = np.asarray(np.concatenate((np.real(X), np.imag(X)), axis=3))
-    # print("X shape:", np.shape(X))
     y = data
     y = np.reshape(np.asarray([map_target(item[1]) for item in data]), (np.shape(y)[0], 1))
-    # print("y values:", y[0])
-    # print("y shape:", np.shape(y))
-    # for x in L:
-    #     del x[3]
     return X, y
 
 def map_target(item):
@@ -42,7 +37,8 @@ def mean_pred(y_true, y_pred):
 
 class ModelTrainer:
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, N):
+        self.N = N
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3, random_state=42)
         self.model = self.generate_model()
 
@@ -51,7 +47,8 @@ class ModelTrainer:
 
     def generate_model(self):
         model = models.Sequential()
-        model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(100, 100, 2)))
+        print()
+        model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
         model.add(layers.MaxPooling2D((2, 2)))
         model.add(layers.Flatten())
         model.add(layers.Dense(64, activation='relu'))
@@ -83,26 +80,37 @@ class ModelTrainer:
     def training_history(self, history):
         print(history.history.keys())
         #  "Accuracy"
-        plt.plot(history.history['acc'])
-        plt.plot(history.history['val_acc'])
-        plt.title('model accuracy')
-        plt.ylabel('accuracy')
-        plt.xlabel('epoch')
-        plt.legend(['train', 'validation'], loc='upper left')
-        plt.show()
+        fig, ax1 = plt.subplots()
+        ax1 = plt.plot(history.history['acc'])
+        ax1 = plt.plot(history.history['val_acc'])
+        ax1 = plt.title('Model accuracy and loss')
         # "Loss"
-        plt.plot(history.history['loss'])
-        plt.plot(history.history['val_loss'])
-        plt.title('model loss')
-        plt.ylabel('loss')
-        plt.xlabel('epoch')
-        plt.legend(['train', 'validation'], loc='upper left')
-        plt.show()
+        ax1 = plt.plot(history.history['loss'])
+        ax1 = plt.plot(history.history['val_loss'])
+        ax1 = plt.xlabel('Epoch')
+        ax1 = plt.legend(['Training set accuracy', 'Validation set accuracy','Training set loss', 'Validation set loss']
+                         , loc='upper left')
+        plt.savefig("results/N"+str(self.N)+"_accuracy_loss_epochs.pdf")
+        pass
+
+def train_save_model(Ns, batch_size, epochs):
+    start_time = time.time()
+    for N in Ns:
+        X, y = preprocess_training_data("pickled/N"+str(N)+"_Trainset")
+        model_trainer = ModelTrainer(X, y, N)
+        history = model_trainer.fit_model(batch_size=batch_size,
+                                          epochs=epochs)
+        model_trainer.training_history(history)
+        model_trainer.save_model("pickled/N"+str(N)+"_Model")
+    print("--- Model training lasted %s seconds ---" % (time.time() - start_time))
+    pass
 
 
 if __name__ == "__main__":
-    X, y = preprocess_training_data("pickled/N10_Trainset")
-    model_trainer = ModelTrainer(X, y)
-    history = model_trainer.fit_model(batch_size=100, epochs=10)
-    model_trainer.training_history(history)
-    model_trainer.save_model("pickled/N10_Model")
+    # Ns = [10, 11, 12]
+    Ns = [12]
+    train_save_model(Ns,
+                     batch_size=32,
+                     epochs=40)
+
+    # N = 12 Model training lasted 537.23 seconds
