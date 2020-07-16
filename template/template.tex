@@ -5,6 +5,8 @@
 \usepackage{bm}% bold math
 \usepackage{hyperref}% add hypertext capabilities
 \usepackage{xcolor}
+\usepackage{braket}
+\usepackage[english]{babel}
 
 %% Philipps stuff %%
 \usepackage{subcaption}
@@ -53,75 +55,47 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occured for all system sizes at $W_c = J$. 
+Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occurred for all system sizes at $W_c = J$. 
 %todo W-c is the same for all system sizes?
 \end{abstract}
-
 
 \maketitle
 
 \section{Introduction}
 
-First, the physical model is introduced. Secondly, the concept of exact diagonalization is briefly presented. As we use the reduced density matrices as the feature for the neural network, we state briefly their derivation.
+Firstly, the physical model is introduced. Secondly, the concept of exact diagonalization is briefly presented. As we use the reduced density matrices as the feature for the neural network, we state briefly their derivation.
+%Review Literature on task. How other people find $W_c$?
+%Why is the topic interesting? => Finding Wc?
+\subsection{Physical model}
 
-Review Literature on task. How other people find $W_c$?
+\subsubsection{Hamiltonian of the Heisenberg model}
 
-Why is the topic interesting? => Finding Wc?
-
-\subsection{Hamiltonian of the Heisenberg model}
-
-What is it used for? With $J=1$, $h_i \in \left[-W, W\right]$
+The hamiltonian of the Heisenberg model is shown in equation \ref{hamiltonian}. In the course of further analysis, we choose $J=1$ and sample $h$ from a uniform distribution such that $h_i \in \left[-W, W\right]$.
 
 \begin{equation}
-	H=\underbrace{J\sum_i \vec{S}_i\cdot\vec{S}_{i+1}}_{\text{Exchange Energy}}-\underbrace{\sum_ih_iS_i^z}_{\text{Random Field}}
+	H=\underbrace{J\sum_i \vec{S}_i\cdot\vec{S}_{i+1}}_{\text{Exchange Energy}}-\underbrace{\sum_ih_iS_i^z}_{\text{Random Field}}\label{hamiltonian}
 \end{equation}
 
-Outcome expectation: 
+\subsubsection{Expectations for the ground state}
 
-In the ergodic phase (delocalized phase) $h<h_c$, the many-body eigenstates
-are thermal,20–23 so the isolated quantum system can relax to
-thermal equilibrium under the dynamics due to its Hamiltonian.
-In the thermodynamic limit $L\rightarrow\infty$, the system thus
-successfully serves as its own heat bath in the ergodic phase.
-In a thermal eigenstate, the reduced density operator of a
-finite subsystem converges to the equilibrium thermal distribution
-for $L\rightarrow\infty$. Thus the entanglement entropy between a
-finite subsystem and the remainder of the system is, for  $L\rightarrow\infty$, the thermal equilibrium entropy of the subsystem. At
-nonzero temperature, this entanglement entropy is extensive,
-proportional to the number of degrees of freedom in the subsystem.
+The expectation for the ground state is dependent on the ratio of the coupling and the local random field. 
 
+For $\frac{W}{J} \ll 1$, we expect an extended, delocalized phase, since the exchange energy dominates over the small external field. Therefore, the system can relax to thermal equilibrium serving as its own heat bath in the limit of large system size $L\rightarrow\infty$.
+Here, the reduced density operator of a finite subsystem converges to the equilibrium thermal distribution
+for $L\rightarrow\infty$.\cite{Pal2010}
 
-In the many-body localized phase $h>h_c$, on the other
-hand, the many-body eigenstates are not thermal:2 the
-“eigenstate-thermalization hypothesis”20–23 is false in the
-localized phase. Thus in the localized phase, the isolated
-quantum system does not relax to thermal equilibrium
-under the dynamics of its Hamiltonian. The infinite system
-fails to be a heat bath that can equilibrate itself. It is a
-“glass” whose local configurations at all times are set by the
-initial conditions. Here the eigenstates do not have extensive
-entanglement, making them accessible to density-matrixrenormalization-group–type
-numerical techniques.5 A limit
-of the localized phase that is simple is J= 0 with $h>0$. Here
-the spins do not interact, all that happens dynamically is
-local Larmor precession of the spins about their localrandom
-fields. No transport of energy or spin happens and
-the many-body eigenstates are simply product states with
-each spin either “up” or “down.”
-\url{https://doi.org/10.1103/PhysRevB.82.174411}
+For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factors dominate over the exchange energy. The resulting states are expected to be product states of spins "up" or "down", as the external field points in z-direction. Also an infinite system cannot equilibrate itself. The local configurations are set by the initial conditions at all times and are adiabatically connected to the trivial state.\cite{Pal2010}
 
+%non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis
+%\url{https://arxiv.org/pdf/1610.03042.pdf}
+%J<g: (large W) localized phase (), 
 
-non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis
-\url{https://arxiv.org/pdf/1610.03042.pdf}
+\subsection{Exact diagonalization}
 
+Exact diagonalization (ED) is a numerical technique we can use to solve the Schrödinger Equation $H\ket{\psi}=E\ket{\psi}$ for the eigenvalues $E$ and eigenvectors $\ket{\psi}$. This only works of the Hamiltonian $H$ represents a discrete and finite system. Most quantum many-particle problems lead to a sparse matrix representation of the Hamiltonian, where only a very small fraction of the matrix
+elements is non-zero.\cite{Weisse2008} A successful method can be found to find ground states is the Lanczos algorithm.\cite{Lanczos1950}
 
-J<g: (large W) localized phase (adiabatically connected to trivial state), J>g extended phase (small W) (ordered??)
-
-Is scaling important?
-
-\subsection{Exact Diagonalization}
-
-Introduce concepts: Exact Diagonalization, 
+Introduce concepts: Exact Diagonalization,
 
 \subsection{Areal (reduced??) Density Matrix}
 
@@ -346,8 +320,8 @@ $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
 
 Citations are numerical\cite{epr}, some more citations~\cite{feyn54,Bire82,Berman1983,witten2001,Davies1998}. 
 
-
-\bibliography{bibsamp}% Produces the bibliography via BibTeX.
+\bibliography{zotero}
+%\bibliography{bibsamp}% Produces the bibliography via BibTeX.
 
 
 \appendix
