@@ -1,6 +1,6 @@
 % Encoding: UTF-8
 
-@Article{PhysRevB.82.174411,
+@Article{Pal2010,
   author    = {Pal, Arijeet and Huse, David A.},
   journal   = {Phys. Rev. B},
   title     = {Many-body localization phase transition},
@@ -27,6 +27,61 @@
   booktitle = {Computational Many-Particle Physics},
   doi       = {10.1007/978-3-540-74686-7_18},
   url       = {https://doi.org/10.1007/978-3-540-74686-7_18},
+}
+
+@Article{Lanczos1950,
+  author    = {C. Lanczos},
+  journal   = {Journal of Research of the National Bureau of Standards},
+  title     = {An iteration method for the solution of the eigenvalue problem of linear differential and integral operators},
+  year      = {1950},
+  month     = oct,
+  number    = {4},
+  pages     = {255},
+  volume    = {45},
+  doi       = {10.6028/jres.045.026},
+  publisher = {National Institute of Standards and Technology ({NIST})},
+  url       = {https://doi.org/10.6028/jres.045.026},
+}
+
+@Article{Ojalvo1970,
+  author    = {I. U. Ojalvo and M. Newman},
+  journal   = {{AIAA} Journal},
+  title     = {Vibration modes of large structures by an automatic matrix-reductionmethod},
+  year      = {1970},
+  month     = jul,
+  number    = {7},
+  pages     = {1234--1239},
+  volume    = {8},
+  doi       = {10.2514/3.5878},
+  publisher = {American Institute of Aeronautics and Astronautics ({AIAA})},
+  url       = {https://doi.org/10.2514/3.5878},
+}
+
+@Article{White1992,
+  author    = {Steven R. White},
+  journal   = {Physical Review Letters},
+  title     = {Density matrix formulation for quantum renormalization groups},
+  year      = {1992},
+  month     = nov,
+  number    = {19},
+  pages     = {2863--2866},
+  volume    = {69},
+  doi       = {10.1103/physrevlett.69.2863},
+  publisher = {American Physical Society ({APS})},
+  url       = {https://doi.org/10.1103/physrevlett.69.2863},
+}
+
+@Article{Zhang2019,
+  author    = {Wei Zhang and Lei Wang and Ziqiang Wang},
+  journal   = {Physical Review B},
+  title     = {Interpretable machine learning study of the many-body localization transition in disordered quantum Ising spin chains},
+  year      = {2019},
+  month     = feb,
+  number    = {5},
+  volume    = {99},
+  doi       = {10.1103/physrevb.99.054208},
+  publisher = {American Physical Society ({APS})},
+  url       = {https://doi.org/10.1103/physrevb.99.054208},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

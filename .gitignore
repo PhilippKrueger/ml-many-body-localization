@@ -15,3 +15,6 @@ pickled/N10_Model
 pickled/N10_Testset
 pickled/N10_Trainset
 *.pyc
+pickled/N10_Model
+pickled/N10_Testset
+pickled/N10_Trainset

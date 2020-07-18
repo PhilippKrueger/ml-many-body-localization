@@ -14,7 +14,7 @@ def load_pickle(filename, to_numeric=1):
     return data
 
 
-def preprocess_training_data(path):
+def preprocess_training_data(path): # reduced_rho, W, self.N, n, E
     data = load_pickle(path)
     X = data
     X = [item[0] for item in X]

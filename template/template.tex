@@ -55,8 +55,7 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-Exact diagonalization was used to find the reduced density matrices of the lowest energy eigenstate of the Heisenberg Model with an additional field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occurred for all system sizes at $W_c = J$. 
-%todo W-c is the same for all system sizes?
+Exact diagonalization was used to find the reduced density matrices for different block sizes of the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occurred for all system sizes at $W_c = J$. %todo system size? Block size? ML model performance and Wc dependency
 \end{abstract}
 
 \maketitle
@@ -93,92 +92,106 @@ For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factor
 \subsection{Exact diagonalization}
 
 Exact diagonalization (ED) is a numerical technique we can use to solve the Schrödinger Equation $H\ket{\psi}=E\ket{\psi}$ for the eigenvalues $E$ and eigenvectors $\ket{\psi}$. This only works of the Hamiltonian $H$ represents a discrete and finite system. Most quantum many-particle problems lead to a sparse matrix representation of the Hamiltonian, where only a very small fraction of the matrix
-elements is non-zero.\cite{Weisse2008} A successful method can be found to find ground states is the Lanczos algorithm.\cite{Lanczos1950}
+elements is non-zero.\cite{Weisse2008} An efficient method to find ground states is the Lanczos algorithm.\cite{Lanczos1950} At first, the algorithm was numerically unstable. This issue was overcome in 1970 by Ojalvo and Newman.\cite{Ojalvo1970}
 
-Introduce concepts: Exact Diagonalization,
+\subsection{Reduced Density Matrix}
 
-\subsection{Areal (reduced??) Density Matrix}
+The usefulness of reduced density matrices has already been shown by White in 1992 with ground states of Heisenberg chains \cite{White1992}. In our case we use areal density matrices as features for the neural network to predict the critical disorder strength of a phase change from delocalized to localized. The reduced density matrix is defined in equation \ref{red_density}. Physically, the reduced density matrix $\rho_A$, provides correct measurement statistics for subsystem A.
 
-areal Density Matrix:
-\url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
+\begin{eqnarray}
+\rho_{AB}&=&\ket{\psi_A}\bra{\psi_A}\otimes\ket{\psi_B}\bra{\psi_B}\\
+\rho_A&=&\text{Tr}_B(\rho_{AB})=\ket{\psi_A}\bra{\psi_A}\text{Tr}\left(\ket{\psi_B}\bra{\psi_B}\right)\label{red_density}
+\end{eqnarray}%\url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
+%\begin{figure}[h!]
+%	\includegraphics[width=0.99\linewidth]{figures/reduced_density_matrix.jpg}
+%	\caption{Example of a figure~\cite{Orus2013}.}
+%	\label{fig:adm}
+%\end{figure}
 
-\begin{figure}[h!]
-	\includegraphics[width=0.99\linewidth]{figures/reduced_density_matrix.jpg}
-	\caption{Example of a figure~\cite{Orus2013}.}
-	\label{fig:adm}
-\end{figure}
+The reduced density matrix was also used by Zhang in 2019 to learn the localization transition in disordered quantum Ising spin chains. Here, the motivation was to reduce the dimension and filter out redundant information. However, it proved to be inferior in comparison to the full density matrix in the analysis. \cite{Zhang2019}
 
-vs
-
-direct density matrix:
-(DOI: 10.1103/PhysRevB.99.054208 says 
-Instead of dividing the system into two subsystems A
-and B to calculate the reduced density matrix of an eigenstate rho a and using the entanglement spectrum as the training data set 34,35, we directly feed the
-probability density of the eigenstate psi i computed in the
-spin basis to the machines as the training data set. The
-reason for doing so is that, although by preprocessing
-the training data can reduce the dimension and filter out
-redundant information, useful information contained in
-the wavefunction of the entire system can also be lost.)
-
-Conclusion: => areal
 
 \subsection{Neural Networks and Convolutional Neural Networks}
 
-Neural Network, CNN
+%Explain Principle, usage, why can we use it here?
+
+Nice, since we can label our dataset with parameters, where we know the outcome.
+Image classification is a can be solved efficiently with machine learning.%todo: Cite stuff
 
 
+\section{Computational Methods}
 
-
-
-\section{Materials and Methods}%todo: Action title
-
-\subsection{Code Protocol}
+The strategy for implementation was as follows:
 
 \begin{enumerate}
-	\item Function: Generate random disorder strength using a uniform distribution
-	\item Function: Generate Hamiltonian from disorder strength and system size
-	\item Define and understand phase transition from extended phase to localized phase
-	\item Function: Picks a number M of lowest eigenstates near Energy E = 0
-	\item Function: Generate density matrix for an eigenstate
-	\item Function: Visualize density matrices
-	\item  Function: Set up machine learning model that takes density matrices of different W as an input, 
-	and predicts whether the state represents an extended or a localized phase.
-	\item Function: Make predictions for different system sizes L and block sizes n.
-	\item Function: Plot the predicitons over W.
-	\item Function: Extract $W_c$
-	from the data.
+	\item Generate Hamiltonian from random disorder strength and system size and calculate lowest eigenstate near Energy $E = 0$.
+	\item Generate density matrix from the eigenstate and the respective reduced density matrices for defined block sizes $n$.
+	\item  Set up machine learning model per n, L that takes density matrices of different W as an input and predicts whether the state represents an extended or a localized phase.
+	\item Make predictions for different system sizes L and block sizes n and plot the predicitons over W. Then extract $W_c$	from the data by using a fit function.
 \end{enumerate}
 
+Critical decisions and specifications for each steps are listed below.
 
-Explain Flow with figure
+\subsubsection{Eigenvalue solver}
+
+scipy.sparse.linalg.eigsh(A, k=6, sigma=0, which='SM', ) pretty slow for N=10 : 70s
+=> qutip.Qobj(H).groundstate() only 0.7s
+
+sigma = 0:%todo: really needed?
+which='SM': smallest magnitude.
+
+Eigenvalue solver, stability convergence
+
+Result for 2 samples each:
+Training Set N=9 completed after 0.9669864177703857 seconds.
+Training Set N=10 completed after 5.634985685348511 seconds.
+Training Set N=11 completed after 25.606987714767456 seconds.
+Training Set N=12 completed after 139.2209861278534 seconds.
+
+\subsubsection{Density matrix reducer}
+
+The partial trace is an operation that reduces the dimension of a Hilbert space by eliminating some degrees of freedom by averaging (tracing). In this sense it is therefore the converse of the tensor product. It is useful when one is interested in only a part of a coupled quantum system. For open quantum systems, this typically involves tracing over the environment leaving only the system of interest. In QuTiP the class method qutip.Qobj.ptrace is used to take partial traces. qutip.Qobj.ptrace acts on the qutip.Qobj instance for which it is called, and it takes one argument sel, which is a list of integers that mark the component systems that should be kept. All other components are traced out.
+\url{http://qutip.org/docs/3.1.0/guide/guide-tensor.html}
+
+Density matrix reducer
 
 \begin{figure}[h!]
-	\includegraphics[width=0.99\linewidth]{figures/flowchart.jpg}
-	\caption{Example of a figure~\cite{Orus2013}.}
-	\label{fig:example}
+\centering
+\includegraphics[width=\linewidth]{figures/partialtrace_proof_of_concept}
+\caption{Proof of concept for partial trace calculation.}
+\label{fig:partialtrace_proof_of_concept}
 \end{figure}
+%todo: reference qutip
 
-Fig.~\ref{fig:example}
 
-\subsection{Machine Learning Models and Error Metrics}
+\subsubsection{Machine Learning Models and Error Metrics}
 
-Two different approaches:
+A neural network was used. As the sample size was %todo,
+a number of layers was selected to avoid overfitting.
+Dropout for regularization.
 
-regression like: Optimizer RMSprop, Loss MAE
+Cite Low sample size techniques:
 
-classification focused: Optimizer Adam
+Prominent optimzer Adam was used which has these and that strengths.
+For a binary classification problem, it is common to use as a loss binary crossentropy:
+
+%todo: formula
 
 Loss: BinaryCrossentropy from \url{https://keras.io/api/losses/probabilistic_losses/#binary_crossentropy-function}:
 Computes the cross-entropy loss between true labels and predicted labels.
 
+Reason:
 Use this cross-entropy loss when there are only two label classes (assumed to be 0 and 1). For each example, there should be a single floating-point value per prediction.
 
-Optimizer: Stochastic Gradient Descent, Learning rate? Formula? Principle?
+\subsubsection{$W_c$ finder}
 
-Explain metrics and errors and why they are used. Which ml models are used and why?
 
-Use drop out to reduce overfitting. Low sample size techniques:
+Fit with step like function: Candidates: logistic, heaviside
+
+Choose logisitc nicer, because differentiable and transition is not abrupt?%todo
+
+
+
 
 \section{Results}%todo: Action title
 
@@ -186,7 +199,6 @@ Use drop out to reduce overfitting. Low sample size techniques:
 
 Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 500. Measure of variation in the test set??
 
-\newpage
 \begin{figure*}[h!]
 	\begin{subfigure}[c]{0.3\textwidth}
 		\includegraphics[width=\textwidth]{../results/N10_trainingset_groundstate_Wmax0.5.pdf}
