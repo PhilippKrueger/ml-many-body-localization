@@ -106,20 +106,23 @@ class ModelTrainer:
 def train_save_model(Ns, batch_size, epochs):
     start_time = time.time()
     for N in Ns:
-        X, y = preprocess_training_data("pickled/N"+str(N)+"_Trainset")
-        model_trainer = ModelTrainer(X, y, N)
-        history = model_trainer.fit_model(batch_size=batch_size,
-                                          epochs=epochs)
-        model_trainer.training_history(history)
-        model_trainer.save_model("pickled/N"+str(N)+"_Model")
-        plot_model(model_trainer.model, to_file="results/N"+str(N)+"_model_visualization.png")
+        start_model_time = time.time()
+        for n in range(1, N+1):
+            X, y = preprocess_training_data("lanczos/training_sets/N"+str(N)+"n"+str(n)+"_Trainset")
+            model_trainer = ModelTrainer(X, y, N)
+            history = model_trainer.fit_model(batch_size=batch_size,
+                                              epochs=epochs)
+            model_trainer.training_history(history)
+            model_trainer.save_model("lanczos/models/N"+str(N)+"n"+str(n)+"_Model")
+        print("--- Model trainings for N=" + str(N) + " lasted %s seconds ---" % (
+                        time.time() - start_model_time))
     print("--- Model training lasted %s seconds ---" % (time.time() - start_time))
     pass
 
 
 if __name__ == "__main__":
     # Ns = [10, 11, 12]
-    Ns = [9, 10, 11, 12]
+    Ns = [9, 10]
     train_save_model(Ns,
                      batch_size=70,
                      epochs=40)

@@ -8,7 +8,7 @@ if __name__ == "__main__":
     # Training set generation
     Ns = [9, 10, 11, 12]
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 500
+    # repetitions = 500
     # generate_training_set(Ns, Ws, repetitions) # lasted 55 min
     # Model training
     train_save_model(Ns,
