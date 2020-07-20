@@ -6,22 +6,24 @@ import numpy as np
 
 if __name__ == "__main__":
     # Training set generation
-    Ns = [11, 12]
+    Ns = [9, 10, 11, 12]
     n_max = 7
-    Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 500
-    generate_training_set(Ns, Ws, n_max, repetitions)
+    Ws = np.arange(0., 4.0, 0.05) # => ergodic/delocalized phase, 8.0 localized phase
+
+    # repetitions = 500
+    # generate_training_set(Ns, Ws, n_max, repetitions)
 
     # Model training
     train_save_model(Ns, n_max,
-                     batch_size=32,
+                     batch_size=70,
                      epochs=40)
+
     # Test set generation
-    W_max = np.arange(0., 4.0, 0.05)
-    repetitions = 1
-    generate_test_set(Ns, W_max, repetitions)
+    repetitions = 5
+    generate_test_set(Ns, Ws, n_max, repetitions)
+
     # W_c dependency
-    n_max = 7
-    # plot_wc_dependencies(Ns, Ws)
-    heat_map_plotter = HeatMapPlotter(Ns, Ws, n_max)
-    heat_map_plotter.plot_wc_heatmap()
+    repetitions = 5
+    heat_map_plotter = HeatMapPlotter(Ns, Ws, n_max, repetitions)
+    heat_map_plotter.plot_wc_heatmap_n()
+    heat_map_plotter.plot_wc_heatmap_N()

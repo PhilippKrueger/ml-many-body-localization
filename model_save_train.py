@@ -1,7 +1,6 @@
 from sklearn.model_selection import train_test_split
 import pickle
-from tensorflow.keras import layers, models, losses, callbacks
-from tensorflow.keras.utils import plot_model
+from tensorflow.keras import layers, models, regularizers
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as k
@@ -44,9 +43,6 @@ class ModelTrainer:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3, random_state=42)
         self.model = self.generate_model_sparse()
 
-    def train_test_split(self):
-        pass
-
     def generate_model(self):
         model = models.Sequential()
         model.add(layers.Flatten())
@@ -63,23 +59,23 @@ class ModelTrainer:
         # if self.N != 12:
         # model.add(layers.Conv2D(32, (6, 6), activation='relu', input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
         # model.add(layers.MaxPooling2D((4, 4)))
-        model.add(layers.Flatten())
-        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
-        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+        model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
+        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2')), # #
+        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2')) # fixme use kernel regularizer!! l1 loss as squared error is dangerous below 1
         model.add(layers.Dense(1, activation='sigmoid'))
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])#loss used to be mae loss # metrics: 'mean_absolute_error', 'mean_squared_error',
         return model
 
     def score(self):
         score = self.model.evaluate(self.X_test, self.y_test, verbose=0)
-        print('test loss, test acc:', score)
+        print("test loss: %.3E, test acc: %.3E" % (score[0], score[1]))
         pass
 
     def fit_model(self, batch_size, epochs):
         history = self.model.fit(self.X_train, self.y_train,
                        batch_size=batch_size,
                        epochs=epochs,
-                       verbose=2,
+                       verbose=0,#2
                        validation_data=(self.X_test, self.y_test)
                        )
         return history
@@ -87,20 +83,35 @@ class ModelTrainer:
     def save_model(self, filepath):
         self.model.save(filepath)
 
-    def training_history(self, history):
-        print(history.history.keys())
-        #  "Accuracy"
+    def training_history(self, history, n, N):
+
         fig, ax1 = plt.subplots()
-        ax1 = plt.plot(history.history['acc'])
-        ax1 = plt.plot(history.history['val_acc'])
-        ax1 = plt.title('Model accuracy and loss')
+        plt.title('Model accuracy and loss for $n=$'+str(n)+', $N=$'+str(N))
+        plt.xlabel('Training epoch')
+
         # "Loss"
-        ax1 = plt.plot(history.history['loss'])
-        ax1 = plt.plot(history.history['val_loss'])
-        ax1 = plt.xlabel('Epoch')
-        ax1 = plt.legend(['Training set accuracy', 'Validation set accuracy','Training set loss', 'Validation set loss']
-                         , loc='center right')
-        plt.savefig("results/accuracy_loss_epochs/N"+str(self.N)+"n"+str(self.n_max)+"_accuracy_loss_epochs.pdf")
+        ax1.set_ylabel('Log Loss')  # we already handled the x-label with ax1
+        ax1.set_yscale('log')
+        ax1.tick_params(axis='y')
+        ln1 = ax1.plot(history.history['loss'], label='Training set loss')
+        ln2 = ax1.plot(history.history['val_loss'], label='Validation set loss')
+
+        #  "Accuracy"
+        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        ax2.set_ylabel('Accuracy')  # we already handled the x-label with ax1
+        ax2.tick_params(axis='y')
+        ln3 = ax2.plot(history.history['acc'], 'r', label='Training set accuracy')
+        ln4 = ax2.plot(history.history['val_acc'], 'g', label='Validation set accuracy')
+
+        # Joined Legend
+        lns = ln1 + ln2 + ln3 + ln4
+        labs = [l.get_label() for l in lns]
+        ax1.legend(lns, labs, loc="center right")
+
+        plt.tight_layout()
+        plt.savefig("results/accuracy_loss_epochs/N"+str(self.N)+"n"+str(n)+"_accuracy_loss_epochs.pdf")
+        print("Scores for N=" + str(N) + ", n=" + str(n))
+        self.score()
         pass
 
 def train_save_model(Ns, n_max, batch_size, epochs):
@@ -112,7 +123,7 @@ def train_save_model(Ns, n_max, batch_size, epochs):
             model_trainer = ModelTrainer(X, y, N, n_max)
             history = model_trainer.fit_model(batch_size=batch_size,
                                               epochs=epochs)
-            model_trainer.training_history(history)
+            model_trainer.training_history(history, n, N)
             model_trainer.save_model("lanczos/models/N"+str(N)+"n"+str(n)+"_Model")
         print("--- Model trainings for N=" + str(N) + " lasted %s seconds ---" % (
                         time.time() - start_model_time))
@@ -122,7 +133,7 @@ def train_save_model(Ns, n_max, batch_size, epochs):
 
 if __name__ == "__main__":
     # Ns = [10, 11, 12]
-    Ns = [11, 12]
+    Ns = [10]
     n_max = 7
     train_save_model(Ns, n_max,
                      batch_size=70,

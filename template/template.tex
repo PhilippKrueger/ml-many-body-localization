@@ -9,12 +9,12 @@
 \usepackage[english]{babel}
 
 %% Philipps stuff %%
+\usepackage[font={small}]{caption}
 \usepackage{subcaption}
-\captionsetup[subfigure]{list=true, font=large, labelfont=bf, 
+\captionsetup[subfigure]{list=true, font=small, labelfont=bf, 
 	labelformat=brace, position=top}
 \usepackage{amsmath}
 \def\arraystretch{1.5}
-\usepackage[font={small}]{caption}
 \usepackage{float}
 
 
@@ -59,7 +59,7 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for different block sizes of the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition was for all system sizes predicted to be around $W_c = J$ for the system sizes $L\in\{9, 10, 11, 12\}$ and block sizes $n\in\left[1,7\right]$. %todo system size? Block size? ML model performance and Wc dependency
+The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for a different number of consecutive spins for the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strengths. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. This phase transition was for all system sizes predicted to be around $W_c = 1.5 J$ for the system sizes $L\in\{9, 10, 11, 12\}$ and block sizes $n\in\left[1,7\right]$. Low block sizes suffered from a low accuracy in the machine learning model, whereas higher block size $W_c$ values approached $W_c=J$.  %todo system size? Block size? ML model performance and Wc dependency
 \end{abstract}
 
 \maketitle
@@ -123,7 +123,7 @@ The strategy for implementation was as follows:
 	\item Generate Hamiltonian from random disorder strength and system size. Then calculate lowest eigenstate near Energy $E = 0$.
 	\item Generate density matrix from the eigenstate and the respective reduced density matrices for defined block sizes $n$.
 	\item  Set up machine learning model per $n$, $L$ that takes density matrices of different $W$ as an input and predicts whether the state represents an extended or a localized phase.
-	\item Make predictions for different system sizes L and block sizes $n$ and plot the predicitons over $W$. Then extract $W_c$	from the data by using a fit function.
+	\item Make predictions for different system sizes L and block sizes $n$ and plot the predictions over $W$. Then extract $W_c$	from the data by using a fit function.
 \end{enumerate}
 
 Critical decisions and specifications for each steps are listed below. Afterwards, a brief motivation for the parameter range and resolution is given.
@@ -152,11 +152,11 @@ The algorithm of selecting the position vector of $n$ consecutive sites was impl
 	\item Determine right chain length $n_\text{right}$ as $n-n_\text{left}$.
 	\item Select spins from left chain end to right chain end around center spin.
 \end{enumerate}
-This results in a behaviour that picks left indices more favourably, but succeeds if equally spaced ends exist. Let the spins be numbered as $\{1, 2, 3, 4, 5\}$ for $N=5$, then  $n=3$ results in $\{2, 3, 4\}$, whereas $n=2$ results in $\{2, 3\}$.
+This results in a behavior that picks left indices more favorably, but succeeds if equally spaced ends exist. Let the spins be numbered as $\{1, 2, 3, 4, 5\}$ for $N=5$, then  $n=3$ results in $\{2, 3, 4\}$, whereas $n=2$ results in $\{2, 3\}$.
 
 These lattice sites serve then as an input to the partial trace function, such that the density matrix represents the measurement statistics of the center system.
 
-\subsection{Machine learning models and error metrics}
+\subsection{Machine learning models and error metrics}\label{sec:nn}
 
 The decision for the machine learning framework \texttt{keras} was motivated by its flexibility and simplicity. \cite{chollet2015keras}
 
@@ -173,7 +173,7 @@ For a two label classification problem, it is useful to use cross-entropy as a l
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/cross_entropy}
-\caption{Cross Entropy Loss}
+\caption{Cross-Entropy Loss}
 \label{fig:cross_entropy}
 \end{figure}
 The definition for a two class cross-entropy loss can be found in equation \ref{cross-loss}, where $y \in \{0,1\}$ is the true class and $\hat{y}\in\left[0,1\right]$ the predicted probability. This loss is also plotted in Figure \ref{fig:cross_entropy}.
@@ -181,7 +181,7 @@ The definition for a two class cross-entropy loss can be found in equation \ref{
 L(\hat{y}, y)=-\left(y\log(\hat{y})+(1-y)\log(1-\hat{y})\right)\label{cross-loss}
 \end{equation}
 
-\subsection{Extraction of critical disorder strength $W_c$}
+\subsection{Extraction of critical disorder strength $W_c$}\label{sec:wcextract}
 
 To fit for the critical disorder strength $W_c$, two functions were compared. The logistic Fermi-Dirac like function:
 \begin{align}
@@ -199,13 +199,13 @@ and the heaviside function:
 	\end{align}
 The fully delocalized phase is defined as $0$ and fully localized as $1$. Whereas the heaviside function has an abrupt step and only maps to the extrema, the logistic function serves as a smoother option for a transition, depending on the parameter $alpha$. The motivation came also from an optimizers view: Differentiable functions are easier to fit for the computer.\cite{Kyurkchiev2015} Therefore, the logistic function was used to extract $W_c$ with the empiric decision of $\alpha=50$.
 
-\subsection{Limitations for parameter range and resolution}
+\subsection{Limitations for parameter range and resolution}\label{sec:param}
 
 \begin{enumerate}
 	\item System size $L$: Limited by computing time of eigenvalue solver. For the system size $L=12$, one calculation lasted approximately one minute.
 	\item Block size $n$: 500 samples, $L=9$, $n=8$ required 4 GB of storage for the training set, exceeding the machines performance during model fitting. Therefore, $n=7$ was found to be sufficient for all system sizes.
-	\item Sample size: 500 samples can be generated for $L=12$, $n_{max}=7$ in approximately 9 hours. This was found to be a sufficient sample size.
-	\item $W$ range and resolution for the testing set: Since each point of a test set comes with a Hamiltonian with randomly drawn $h_i\in\left[-W,W\right]$, a decent amount of variance can be expected for the phase prediction. As we want to extract the phase cange in general, and are not interested in the particular phase predictions of one specific Hamiltonian we choose to regularize the prediction by averaging over five predicted samples.
+	\item Sample size: 500 samples can be generated for $L=12$, $n_{max}=7$ in approximately 9 hours. This was found to be a sufficient sample size per system and block size.
+	\item Disorder strength $W$ for the testing set: Since each point of a test set comes with a Hamiltonian with randomly drawn $h_i\in\left[-W,W\right]$, a decent amount of variance can be expected for the phase prediction. As we want to extract the phase change in general, and are not interested in the particular phase predictions of one specific Hamiltonian we choose to regularize the prediction by averaging over five predicted samples.
 \end{enumerate}
 %Training Set N=9 completed after 0.9669864177703857 seconds.
 %Training Set N=10 completed after 5.634985685348511 seconds.
@@ -236,32 +236,40 @@ The parameter range for the computation of the reduced density matrices can be f
 \end{table}
 
 In order to give some visual intuition, Figure \ref{fig:groundstate} shows realizations for different block sizes and phases.
-\onecolumngrid
+\newpage\onecolumngrid
 \begin{center}
-\begin{figure}[H]
-	\centering	
-	\begin{subfigure}[c]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax0.5.pdf}
-		\subcaption{extended phase, $n=4$.}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax8.0.pdf}
-		\subcaption{localized phase, $n=4$.}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{../results/groundstates/N12n5_trainingset_groundstate_Wmax0.5.pdf}
-		\subcaption{extended phase, $n=5$.}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.45\textwidth}
-		\includegraphics[width=\textwidth]{../results/groundstates/N12n5_trainingset_groundstate_Wmax8.0.pdf}
-		\subcaption{localized phase, $n=5$.}
-	\end{subfigure}
-	\caption{Real part of the density matrix of an ergodic and localized phases for block sizes $n=\{4, 5\}$ and system size $L=12$.}
-	\label{fig:groundstate}
-\end{figure}
+	\begin{figure}[H]
+		\centering	
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n7_trainingset_groundstate_Wmax0.5.pdf}
+			\subcaption{extended phase, $n=7$.}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n7_trainingset_groundstate_Wmax8.0.pdf}
+			\subcaption{localized phase, $n=7$.}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax0.5.pdf}
+			\subcaption{extended phase, $n=4$.}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax8.0.pdf}
+			\subcaption{localized phase, $n=4$.}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n1_trainingset_groundstate_Wmax0.5.pdf}
+			\subcaption{extended phase, $n=1$.}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/groundstates/N12n1_trainingset_groundstate_Wmax8.0.pdf}
+			\subcaption{localized phase, $n=1$.}
+		\end{subfigure}
+		\caption{Real part of the density matrix of an ergodic and localized phases for block sizes $n=\{4, 5\}$ and system size $L=12$.}
+		\label{fig:groundstate}
+	\end{figure}
 \end{center}
-\twocolumngrid
-The visual inspection indicates that the density matrix of the localized phase has a sharp maximum at the preferred state that is forced by the random disorder strength. The extended phase shows a checkerboard pattern structure, which reflects that some configurations are more preferred than others. These unpreferred states are related to neighboring unaligned spins. Another observation is that the density matrix reductions of the full groundstate conserved these properties perfectly, when comparing $n=4$ to $n=5$. This observation was also made for all other system and block sizes.
+\twocolumngrid\newpage
+The visual inspection indicates that the density matrix of the localized phase has a sharp maximum at the preferred state that is forced by the random disorder strength. The extended phase shows a checkerboard pattern structure, which reflects that some configurations are more preferred than others. These energetically expensive states are related to neighboring unaligned spins. Another observation is that the density matrix reductions of the full ground state conserved these properties for $n>2$, when comparing $n=7$ to $n=\{6,5,4,3,2\}$. The similarity between the two phases gets smaller the smaller the block size $n$. For $n=1$, one could argue that the density matrices are very similar, as they only deviate for half the matrix elements.
 
 %todo: Measure of variation in the test set??
 
@@ -277,81 +285,119 @@ The visual inspection indicates that the density matrix of the localized phase h
 %	\caption{Zwei Bilder mit Subfigure nebeneinander}
 %\end{figure}
 
-\subsection{Model training}
+\subsection{Model training}\label{sec:loss_acc}
 
 Before we can predict the phase of a newly generated test set, we have to train the neural network with our available training data. For each system and block size a separate model was trained, as a different system size might influence the physical behavior due to open boundary conditions.
 
-\subsection{Prediction of extended vs localized phase}
+The neural networks are generated as a sequential keras model with the following configuration, as discussed in section \ref{sec:nn}: 
 
-The first step
+\begin{lstlisting}[language=Python]
+model = models.Sequential()
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+model.add(layers.Dense(1, activation='sigmoid'))
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+\end{lstlisting}%todo: input shape!!
 
-Training and validation scores:
+Two strategies are employed to prevent over-fitting:
+\begin{enumerate}
+	\item $30$ \% of the training set was used for validation. To avoid a biased split, we relied on \texttt{sklearn}'s method \texttt{train\_test\_split} that samples randomly from the training set.
+	\item A bias regularizer was introduced to move the output functions closer to the origin. Even though some further regularization might still be possible, a kernel regularizer did not prove to be useful and impacted the resulting scores heavily.
+\end{enumerate}
 
-\newpage
-\begin{figure*}[H]
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N10_accuracy_loss_epochs}
-		\subcaption{$N=10$}
-		\label{fig:N10_accuracy_loss_epochs}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N11_accuracy_loss_epochs}
-		\subcaption{$N=11$}
-		\label{fig:N11_loss_epochs}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N12_accuracy_loss_epochs}
-		\subcaption{$N=12$}
-		\label{fig:N12_loss_epochs}
-	\end{subfigure}
-	\caption{Accuracy and loss of neuronal network plotted over training epochs.}
-\end{figure*}
+The model training was executed by using a batch size of 70 and 40 epoch, where the batch size was limited by the CPU performance and no significant loss or accuracy improvements where noted after 30 epochs.
+
+An example of the accuracy and loss dependency on the number of epochs for system size $L=10$, and block sizes $n=\{1, 7\}$ is presented below in Figure \label{fig:val_acc}.%todo: more training epochs
+
+\onecolumngrid
+\begin{center}
+	\begin{figure}[H]
+		\centering	
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/accuracy_loss_epochs/N10n1_accuracy_loss_epochs.pdf}
+			\subcaption{$n=1$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/accuracy_loss_epochs/N10n7_accuracy_loss_epochs.pdf}
+			\subcaption{$n=7$}
+		\end{subfigure}
+		\caption{Loss and accuracy on training and validation set for system size $L=10$.}
+		\label{fig:val_acc}
+	\end{figure}
+\end{center}
+\twocolumngrid
+
+The overall losses for $n>1$ where always found to be $\approx 0.01$ with accuracies of $1.0$, whereas the models at $n=1$ showed larger losses of  $\approx 0.1$ and mostly acceptable accuracies near $1$.%todo: loss heatmap plot
+
+Figure \ref{fig:val_acc} illustrates that not only the scores for small block sizes were lower, but also the convergence rates. In conclusion, the scores show that the learning of the phases was prone to severe over-fitting and resulted in acceptable scores for the next step of prediction, where $n=1$ can be expected to have a worse performance during the prediction. This behavior was expected, when we took a closer look at the training set.
+
+\subsection{Prediction of extended vs localized phase and analysis of critical disorder strength}
+
+First, the testing set was generated. Following the parameter discussion in section \ref{sec:param}, we generate five samples for each $W\in\left[0,4\right]$, with step $\Delta W=0.05$, resulting in 400 samples per system and block size. Afterwards, the predictions were fitted with a logistic function to obtain $W_c$ as described in section \ref{sec:wcextract}.
+
+Five predicted phases are averaged at each point and plotted to a heat map. The fitted $W_c$ is plotted along in Figure \ref{fig:wcextract}.
+
+\onecolumngrid
+\begin{center}
+	\begin{figure}[H]
+		\centering	
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/N9_Wc_n_dependency.pdf}
+			\subcaption{$L=9$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
+			\subcaption{$L=10$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/N11_Wc_n_dependency.pdf}
+			\subcaption{$L=11$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/N12_Wc_n_dependency.pdf}
+			\subcaption{$L=12$}
+		\end{subfigure}
+		\caption{Dependency of the phase transition on block size $n$ for different system sizes.}
+		\label{fig:wcextract}
+	\end{figure}
+\end{center}
+\twocolumngrid
+In conclusion, the predicted critical disorder strength $W_c$ decayed, when models with larger block sizes $n$ were used for prediction. The low $W_c$ values for $n=\{1,2\}$ might just as well be attributed to the poor loss and accuracy values shown in section \ref{sec:loss_acc}. An explanation for this decay might be that a bigger block size can more accurately reflect the level of disorder forced on the system. For smaller block sizes, for some spins the information is lost whether the configuration was the result of interacting lattice sites or the random disorder strength.
+
+\onecolumngrid
+\begin{center}
+	\begin{figure}[H]
+		\centering	
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n1_Wc_N_dependency.pdf}
+			\subcaption{$n=1$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n3_Wc_N_dependency.pdf}
+			\subcaption{$n=3$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n5_Wc_N_dependency.pdf}
+			\subcaption{$n=5$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n7_Wc_N_dependency.pdf}
+			\subcaption{$n=7$}
+		\end{subfigure}
+		\caption{Dependency of the phase transition over system sizes $L$ for different block sizes $n$.}
+		\label{fig:wcextract}
+	\end{figure}
+\end{center}
+\twocolumngrid
 
 
-
-\subsection{$W_c$ analysis}
-
-
-Now we generate testing set with $W_{max} \in \left[0,4\right]$. We suspect $W_c$ to be at 1 ??%todo
-We fit a logistic curve and extract $W_c$ as a parameter.
-
-\newpage
-\begin{figure}[H]
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N10_predict_wc}
-		\subcaption{$N=10$}
-		\label{fig:N10_predict_wc}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N11_predict_wc}
-		\subcaption{$N=11$}
-		\label{fig:N11_predict_wc}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N12_predict_wc}
-		\subcaption{$N=12$}
-		\label{fig:N12_predict_wc}
-	\end{subfigure}
-	\caption{Phase prediction with localized and ergodic phase defined as 1, 0.}
-\end{figure}
-
+%todo Plot N dependency
+The plots are indicating that a bigger system size requires a larger disorder strength to perform the phase transition.
 
 These are our $W_c$ depending on n, L.
 
 %todo: Plot with extracted $W_Cs$
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.7\linewidth]{../results/Wc_L_dependency}
-	\caption{}
-	\label{fig:Wc_L_dependency}
-\end{figure}
-\begin{figure}
-\centering
-\includegraphics[width=0.7\linewidth]{../results/Wc_N_dependency}
-\caption{}
-\label{fig:Wc_N_dependency}
-\end{figure}
 
 
 \section{Conclusion}%todo: Action title
