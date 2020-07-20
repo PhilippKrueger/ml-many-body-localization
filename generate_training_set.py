@@ -1,7 +1,6 @@
 from ed import *
 import time
 import pickle
-from scipy.sparse.linalg import ArpackNoConvergence
 import qutip
 
 
@@ -67,9 +66,8 @@ class TrainingSetGenerator:
                 E, v = qutip.Qobj(H).groundstate() # fixme might not be sparse, make sparse=True!!!
                 rho = np.outer(v, v)
                 for n in range(1, self.n_max+1):
-                    reduced_rho = self.get_partial_trace(rho, n) # must trace out something
+                    reduced_rho = self.get_partial_trace(rho, n)
                     training_set[n].append([reduced_rho, W, self.N, n, E, rep])
-                # training_set[self.N].append([rho, W, self.N, self.N, E, rep])
         return training_set
 
     def get_partial_trace(self, rho, n):

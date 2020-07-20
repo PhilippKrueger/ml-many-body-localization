@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 import pickle
-from tensorflow.keras import layers, models, regularizers
+from tensorflow.keras import layers, models
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow.keras.backend as k

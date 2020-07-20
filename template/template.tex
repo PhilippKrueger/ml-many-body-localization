@@ -16,6 +16,7 @@
 \usepackage{amsmath}
 \def\arraystretch{1.5}
 \usepackage{float}
+\usepackage{lipsum}
 
 
 %% Code stuff %%
@@ -59,7 +60,7 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for a different number of consecutive spins for the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strengths. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. This phase transition was for all system sizes predicted to be around $W_c = 1.5 J$ for the system sizes $L\in\{9, 10, 11, 12\}$ and block sizes $n\in\left[1,7\right]$. Low block sizes suffered from a low accuracy in the machine learning model, whereas higher block size $W_c$ values approached $W_c=J$.  %todo system size? Block size? ML model performance and Wc dependency
+The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for a different number of consecutive spins for the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strengths. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. This phase transition was for all system sizes predicted to be around $W_c = 1.5 J$ for the system sizes $L\in\{9, 10, 11, 12\}$ and block sizes $n\in\left[1,7\right]$. Low block sizes suffered from a low accuracy in the machine learning model, whereas for higher block sizes the $W_c$ values approached $W_c=J$.  %todo system size? Block size? ML model performance and Wc dependency
 \end{abstract}
 
 \maketitle
@@ -90,6 +91,13 @@ Here, the reduced density operator of a finite subsystem converges to the equili
 for $L\rightarrow\infty$.\cite{Pal2010}
 
 For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factors dominate over the exchange energy. The resulting states are expected to be product states of spins "up" or "down", as the external field points in z-direction. Also an infinite system cannot equilibrate itself. The local configurations are set by the initial conditions at all times and are adiabatically connected to the trivial state.\cite{Pal2010}
+
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=1\linewidth]{figures/heisenberg_chain}
+%	\caption{Visualization of the random disorder strength efftect on a ground state.}
+%	\label{fig:heisenberg_chain}
+%\end{figure}
 
 \subsection{Exact diagonalization}
 
@@ -132,7 +140,7 @@ Critical decisions and specifications for each steps are listed below. Afterward
 
 For the eigenvalue solution, we use SciPy's method \texttt{eigsh} through QuTiP's method \texttt{groundstate}\cite{Virtanen_2020, Johansson2012}. In comparison, a naive parameter choice for \texttt{eigsh} for $N=10$ lattice sites needed 70 s to calculate the ground state, whereas \texttt{groundstate} only took 0.7 s, by choosing an optimized parameter set for \texttt{eigsh}. Of course, \texttt{eigsh} supplies the user with k eigenvalues instead of only one, but this feature was not found to be critical for the further analysis. Therefore, \texttt{groundstate} is used throughout the program, to avoid making a non optimal parameter choice.
 
-\subsection{Computation of reduced density matrix}
+\subsection{Computation of the reduced density matrix}
 
 To get the reduced density matrix of system A, one has to "trace out" all states outside of A. Luckily, the library QuTiP supplies a method \texttt{ptrace}, which does exactly that. It is important to note that the method takes those indices as an argument which should be kept.\cite{Johansson2012}
 
@@ -163,7 +171,7 @@ The decision for the machine learning framework \texttt{keras} was motivated by 
 When setting up the machine learning model, one can already specify the first and last layer: The first (input) layer has to match the sample size of the incoming data, this can be already computed in advance. The length $len$ for block size $n$ is $2\cdot\left(2^n\times 2^n \right)$. The factor 2 comes from a preprocessing step, where the complex values are mapped to a second real picture, since the fitting procedure usually does not expect complex numbers. The last layer is a one node sigmoid, as the target output is the one-dimensional classification in $\left[0,1\right]$.
 
 For small sample sizes, there exist various approaches to choose the right amount of layers and regularization methods \cite{Olson2018,Feng2019}, which cannot be generalized, as they heavily depend on feature size and target dimension. As a rule of thumb the approximation was used that each weight should be influenced by at least seven samples. Using this we get from 500 samples roughly 70 weights.
-%todo select amount of layers, nodes, dropout for regularization
+%todo: select amount of layers, nodes, dropout for regularization
 
 
 The optimizer Adam was chosen, because it is computationally efficient,
@@ -293,12 +301,12 @@ The neural networks are generated as a sequential keras model with the following
 
 \begin{lstlisting}[language=Python]
 model = models.Sequential()
-model.add(layers.Flatten())
+model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
 model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
 model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
 model.add(layers.Dense(1, activation='sigmoid'))
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-\end{lstlisting}%todo: input shape!!
+\end{lstlisting}
 
 Two strategies are employed to prevent over-fitting:
 \begin{enumerate}
@@ -306,7 +314,7 @@ Two strategies are employed to prevent over-fitting:
 	\item A bias regularizer was introduced to move the output functions closer to the origin. Even though some further regularization might still be possible, a kernel regularizer did not prove to be useful and impacted the resulting scores heavily.
 \end{enumerate}
 
-The model training was executed by using a batch size of 70 and 40 epoch, where the batch size was limited by the CPU performance and no significant loss or accuracy improvements where noted after 30 epochs.
+The model training was executed by using a batch size of 70 and 200 epochs, where the batch size was limited by the CPU performance and no significant loss or accuracy improvements where noted after 120 epochs.
 
 An example of the accuracy and loss dependency on the number of epochs for system size $L=10$, and block sizes $n=\{1, 7\}$ is presented below in Figure \label{fig:val_acc}.%todo: more training epochs
 
@@ -330,13 +338,12 @@ An example of the accuracy and loss dependency on the number of epochs for syste
 
 The overall losses for $n>1$ where always found to be $\approx 0.01$ with accuracies of $1.0$, whereas the models at $n=1$ showed larger losses of  $\approx 0.1$ and mostly acceptable accuracies near $1$.%todo: loss heatmap plot
 
-Figure \ref{fig:val_acc} illustrates that not only the scores for small block sizes were lower, but also the convergence rates. In conclusion, the scores show that the learning of the phases was prone to severe over-fitting and resulted in acceptable scores for the next step of prediction, where $n=1$ can be expected to have a worse performance during the prediction. This behavior was expected, when we took a closer look at the training set.
+Figure \ref{fig:val_acc} illustrates that not only the scores for small block sizes were lower, but also the convergence rates. In conclusion, the scores show that the learning of the phases was prone to severe over-fitting and resulted in acceptable scores for the next step of prediction, where $n=1$ can be expected to have a worse performance during the prediction. This behavior was expected, when we notized the similarity for $n=1$ block size samples in the training set.
 
-\subsection{Prediction of extended vs localized phase and analysis of critical disorder strength}
-
+\subsection{Analysis of critical disorder strength}
+\subsubsection{Dependency on block size}
 First, the testing set was generated. Following the parameter discussion in section \ref{sec:param}, we generate five samples for each $W\in\left[0,4\right]$, with step $\Delta W=0.05$, resulting in 400 samples per system and block size. Afterwards, the predictions were fitted with a logistic function to obtain $W_c$ as described in section \ref{sec:wcextract}.
-
-Five predicted phases are averaged at each point and plotted to a heat map. The fitted $W_c$ is plotted along in Figure \ref{fig:wcextract}.
+Five predicted phases are averaged at each point and plotted to a heat map. The fitted $W_c$ is plotted along in Figure \ref{fig:wcextractn}.
 
 \onecolumngrid
 \begin{center}
@@ -351,19 +358,25 @@ Five predicted phases are averaged at each point and plotted to a heat map. The 
 			\subcaption{$L=10$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N11_Wc_n_dependency.pdf}
+			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
 			\subcaption{$L=11$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N12_Wc_n_dependency.pdf}
+			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
 			\subcaption{$L=12$}
-		\end{subfigure}
+		\end{subfigure}%todo: add N11 N12 figures
 		\caption{Dependency of the phase transition on block size $n$ for different system sizes.}
-		\label{fig:wcextract}
+		\label{fig:wcextractn}
 	\end{figure}
 \end{center}
 \twocolumngrid
+
 In conclusion, the predicted critical disorder strength $W_c$ decayed, when models with larger block sizes $n$ were used for prediction. The low $W_c$ values for $n=\{1,2\}$ might just as well be attributed to the poor loss and accuracy values shown in section \ref{sec:loss_acc}. An explanation for this decay might be that a bigger block size can more accurately reflect the level of disorder forced on the system. For smaller block sizes, for some spins the information is lost whether the configuration was the result of interacting lattice sites or the random disorder strength.
+
+\subsubsection{Dependeny on system size}
+
+\lipsum[1]%todo: write
+
 
 \onecolumngrid
 \begin{center}
@@ -392,12 +405,8 @@ In conclusion, the predicted critical disorder strength $W_c$ decayed, when mode
 \twocolumngrid
 
 
-%todo Plot N dependency
+%todo: Plot N dependency
 The plots are indicating that a bigger system size requires a larger disorder strength to perform the phase transition.
-
-These are our $W_c$ depending on n, L.
-
-%todo: Plot with extracted $W_Cs$
 
 
 \section{Conclusion}%todo: Action title
@@ -407,6 +416,8 @@ $W_c$ depends on n, L (yes/no).
 $W_c$ prediction coincides with the expectation (yes/no)
 
 $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
+
+\lipsum[2]%todo: write
 
 \bibliography{zotero}
 %\bibliography{bibsamp}% Produces the bibliography via BibTeX.

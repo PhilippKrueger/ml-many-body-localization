@@ -1,4 +1,3 @@
-from generate_training_set import TrainingSetGenerator, save_pickle
 from model_save_train import *
 from scipy.optimize import curve_fit
 
