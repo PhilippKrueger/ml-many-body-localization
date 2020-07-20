@@ -12,6 +12,10 @@
 \usepackage{subcaption}
 \captionsetup[subfigure]{list=true, font=large, labelfont=bf, 
 	labelformat=brace, position=top}
+\usepackage{amsmath}
+\def\arraystretch{1.5}
+\usepackage[font={small}]{caption}
+\usepackage{float}
 
 
 %% Code stuff %%
@@ -55,44 +59,42 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-Exact diagonalization was used to find the reduced density matrices for different block sizes of the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition occurred for all system sizes at $W_c = J$. %todo system size? Block size? ML model performance and Wc dependency
+The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for different block sizes of the lowest energy eigenstate of the Heisenberg Model with an additional random field in z-direction at low and high disorder strength. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. The phase transition was for all system sizes predicted to be around $W_c = J$ for the system sizes $L\in\{9, 10, 11, 12\}$ and block sizes $n\in\left[1,7\right]$. %todo system size? Block size? ML model performance and Wc dependency
 \end{abstract}
 
 \maketitle
 
 \section{Introduction}
 
-Firstly, the physical model is introduced. Secondly, the concept of exact diagonalization is briefly presented. As we use the reduced density matrices as the feature for the neural network, we state briefly their derivation.
+The physical model and the concept of exact diagonalization is presented first. As we use reduced density matrices as features for the neural network, we explain briefly their computation and meaning.
 %Review Literature on task. How other people find $W_c$?
 %Why is the topic interesting? => Finding Wc?
 \subsection{Physical model}
 
 \subsubsection{Hamiltonian of the Heisenberg model}
 
-The hamiltonian of the Heisenberg model is shown in equation \ref{hamiltonian}. In the course of further analysis, we choose $J=1$ and sample $h$ from a uniform distribution such that $h_i \in \left[-W, W\right]$.
+The Hamiltonian of the Heisenberg model is shown in equation \ref{hamiltonian}. In the course of further analysis, we choose $J=1$ and sample $h$ from a uniform distribution such that $h_i \in \left[-W, W\right]$.
 
 \begin{equation}
 	H=\underbrace{J\sum_i \vec{S}_i\cdot\vec{S}_{i+1}}_{\text{Exchange Energy}}-\underbrace{\sum_ih_iS_i^z}_{\text{Random Field}}\label{hamiltonian}
 \end{equation}
 
+%todo: nice picture with spins and all?
+
 \subsubsection{Expectations for the ground state}
 
 The expectation for the ground state is dependent on the ratio of the coupling and the local random field. 
 
-For $\frac{W}{J} \ll 1$, we expect an extended, delocalized phase, since the exchange energy dominates over the small external field. Therefore, the system can relax to thermal equilibrium serving as its own heat bath in the limit of large system size $L\rightarrow\infty$.
+For $\frac{W}{J} \ll 1$, we expect an delocalized, extended phase, since the exchange energy dominates over the small external field. Therefore, the system can relax to thermal equilibrium serving as its own heat bath in the limit of large system size $L\rightarrow\infty$.
 Here, the reduced density operator of a finite subsystem converges to the equilibrium thermal distribution
 for $L\rightarrow\infty$.\cite{Pal2010}
 
 For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factors dominate over the exchange energy. The resulting states are expected to be product states of spins "up" or "down", as the external field points in z-direction. Also an infinite system cannot equilibrate itself. The local configurations are set by the initial conditions at all times and are adiabatically connected to the trivial state.\cite{Pal2010}
 
-%non-thermalising phase, in which the system violates the Eigenstate Thermalisation hypothesis
-%\url{https://arxiv.org/pdf/1610.03042.pdf}
-%J<g: (large W) localized phase (), 
-
 \subsection{Exact diagonalization}
 
-Exact diagonalization (ED) is a numerical technique we can use to solve the Schrödinger Equation $H\ket{\psi}=E\ket{\psi}$ for the eigenvalues $E$ and eigenvectors $\ket{\psi}$. This only works of the Hamiltonian $H$ represents a discrete and finite system. Most quantum many-particle problems lead to a sparse matrix representation of the Hamiltonian, where only a very small fraction of the matrix
-elements is non-zero.\cite{Weisse2008} An efficient method to find ground states is the Lanczos algorithm.\cite{Lanczos1950} At first, the algorithm was numerically unstable. This issue was overcome in 1970 by Ojalvo and Newman.\cite{Ojalvo1970}
+Exact diagonalization (ED) is a numerical technique we can use to solve the time independent Schrödinger Equation $H\ket{\psi}=E\ket{\psi}$ for the eigenvalues $E$ and eigenvectors $\ket{\psi}$. This only works of the Hamiltonian $H$ represents a discrete and finite system. Most quantum many-particle problems lead to a sparse matrix representation of the Hamiltonian, where only a very small fraction of the matrix
+elements is non-zero.\cite{Weisse2008} An efficient method to find ground states is the Lanczos algorithm.\cite{Lanczos1950} At first, the algorithm was numerically unstable. This issue was overcome in 1970 by Ojalvo and Newman.\cite{Ojalvo1970} In this study, we rely on the Lanczos algorithm for the eigensolver.
 
 \subsection{Reduced Density Matrix}
 
@@ -102,21 +104,15 @@ The usefulness of reduced density matrices has already been shown by White in 19
 \rho_{AB}&=&\ket{\psi_A}\bra{\psi_A}\otimes\ket{\psi_B}\bra{\psi_B}\\
 \rho_A&=&\text{Tr}_B(\rho_{AB})=\ket{\psi_A}\bra{\psi_A}\text{Tr}\left(\ket{\psi_B}\bra{\psi_B}\right)\label{red_density}
 \end{eqnarray}%\url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
-%\begin{figure}[h!]
-%	\includegraphics[width=0.99\linewidth]{figures/reduced_density_matrix.jpg}
-%	\caption{Example of a figure~\cite{Orus2013}.}
-%	\label{fig:adm}
-%\end{figure}
 
-The reduced density matrix was also used by Zhang in 2019 to learn the localization transition in disordered quantum Ising spin chains. Here, the motivation was to reduce the dimension and filter out redundant information. However, it proved to be inferior in comparison to the full density matrix in the analysis. \cite{Zhang2019}
+The reduced density matrix was also used by Zhang in 2019 to learn the localization transition in disordered quantum Ising spin chains. Here, the motivation was to reduce the dimension and filter out redundant information. However, it proved to be inferior in comparison to the full density matrix in the analysis. \cite{Zhang2019} However, due to RAM limitations, we will rely on reduced density matrices.
 
 
-\subsection{Neural Networks and Convolutional Neural Networks}
+\subsection{Artificial Neural Networks}
 
-%Explain Principle, usage, why can we use it here?
+Rosenblatt published in 1958 his concept of the probabilistic model for information storage and organization in the brain, which greatly inspired others to use those models for computation.\cite{Rosenblatt1958} Over the course of years, they have evolved to a tool that can be used for a variety of applications including computer vision, speech recognition, medical diagnosis, playing games or even artistic painting.\cite{Gatys2015}
 
-Nice, since we can label our dataset with parameters, where we know the outcome.
-Image classification is a can be solved efficiently with machine learning.%todo: Cite stuff
+The reduced density matrices are essentially complex 2D arrays with length $2^n\times2^n$. As we want to classify for an arbitrary $W$ whether we have a localized or delocalized phase, it is convenient to use a machine learning classifier. The density matrices can then be thought of as a complex and real image that can be fed into it analogously to classical image classification.
 
 
 \section{Computational Methods}
@@ -124,109 +120,150 @@ Image classification is a can be solved efficiently with machine learning.%todo:
 The strategy for implementation was as follows:
 
 \begin{enumerate}
-	\item Generate Hamiltonian from random disorder strength and system size and calculate lowest eigenstate near Energy $E = 0$.
+	\item Generate Hamiltonian from random disorder strength and system size. Then calculate lowest eigenstate near Energy $E = 0$.
 	\item Generate density matrix from the eigenstate and the respective reduced density matrices for defined block sizes $n$.
-	\item  Set up machine learning model per n, L that takes density matrices of different W as an input and predicts whether the state represents an extended or a localized phase.
-	\item Make predictions for different system sizes L and block sizes n and plot the predicitons over W. Then extract $W_c$	from the data by using a fit function.
+	\item  Set up machine learning model per $n$, $L$ that takes density matrices of different $W$ as an input and predicts whether the state represents an extended or a localized phase.
+	\item Make predictions for different system sizes L and block sizes $n$ and plot the predicitons over $W$. Then extract $W_c$	from the data by using a fit function.
 \end{enumerate}
 
-Critical decisions and specifications for each steps are listed below.
+Critical decisions and specifications for each steps are listed below. Afterwards, a brief motivation for the parameter range and resolution is given.
 
-\subsubsection{Eigenvalue solver}
+\subsection{Eigenvalue solver}
 
-scipy.sparse.linalg.eigsh(A, k=6, sigma=0, which='SM', ) pretty slow for N=10 : 70s
-=> qutip.Qobj(H).groundstate() only 0.7s
+For the eigenvalue solution, we use SciPy's method \texttt{eigsh} through QuTiP's method \texttt{groundstate}\cite{Virtanen_2020, Johansson2012}. In comparison, a naive parameter choice for \texttt{eigsh} for $N=10$ lattice sites needed 70 s to calculate the ground state, whereas \texttt{groundstate} only took 0.7 s, by choosing an optimized parameter set for \texttt{eigsh}. Of course, \texttt{eigsh} supplies the user with k eigenvalues instead of only one, but this feature was not found to be critical for the further analysis. Therefore, \texttt{groundstate} is used throughout the program, to avoid making a non optimal parameter choice.
 
-sigma = 0:%todo: really needed?
-which='SM': smallest magnitude.
+\subsection{Computation of reduced density matrix}
 
-Eigenvalue solver, stability convergence
+To get the reduced density matrix of system A, one has to "trace out" all states outside of A. Luckily, the library QuTiP supplies a method \texttt{ptrace}, which does exactly that. It is important to note that the method takes those indices as an argument which should be kept.\cite{Johansson2012}
 
-Result for 2 samples each:
-Training Set N=9 completed after 0.9669864177703857 seconds.
-Training Set N=10 completed after 5.634985685348511 seconds.
-Training Set N=11 completed after 25.606987714767456 seconds.
-Training Set N=12 completed after 139.2209861278534 seconds.
-
-\subsubsection{Density matrix reducer}
-
-The partial trace is an operation that reduces the dimension of a Hilbert space by eliminating some degrees of freedom by averaging (tracing). In this sense it is therefore the converse of the tensor product. It is useful when one is interested in only a part of a coupled quantum system. For open quantum systems, this typically involves tracing over the environment leaving only the system of interest. In QuTiP the class method qutip.Qobj.ptrace is used to take partial traces. qutip.Qobj.ptrace acts on the qutip.Qobj instance for which it is called, and it takes one argument sel, which is a list of integers that mark the component systems that should be kept. All other components are traced out.
-\url{http://qutip.org/docs/3.1.0/guide/guide-tensor.html}
-
-Density matrix reducer
+A demonstration of the functionality can be found in Figure \ref{fig:partialtrace_proof_of_concept}.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=\linewidth]{figures/partialtrace_proof_of_concept}
-\caption{Proof of concept for partial trace calculation.}
+\includegraphics[width=0.7\linewidth]{figures/partialtrace_proof_of_concept}
+\caption{Proof of concept for partial trace calculation similar to \protect\hyperlink{http://qutip.org/docs/3.1.0/guide/guide-tensor.html}{QuTiP-Guide/ptrace}.}
 \label{fig:partialtrace_proof_of_concept}
 \end{figure}
-%todo: reference qutip
+
+The algorithm of selecting the position vector of $n$ consecutive sites was implemented as follows: 
+\begin{enumerate}
+	\item Find the center spin rounded to next lowest integer.
+	\item Determine left chain length $n_\text{left}$ as $n/2$ rounded to the next lowest integer.
+	\item Determine right chain length $n_\text{right}$ as $n-n_\text{left}$.
+	\item Select spins from left chain end to right chain end around center spin.
+\end{enumerate}
+This results in a behaviour that picks left indices more favourably, but succeeds if equally spaced ends exist. Let the spins be numbered as $\{1, 2, 3, 4, 5\}$ for $N=5$, then  $n=3$ results in $\{2, 3, 4\}$, whereas $n=2$ results in $\{2, 3\}$.
+
+These lattice sites serve then as an input to the partial trace function, such that the density matrix represents the measurement statistics of the center system.
+
+\subsection{Machine learning models and error metrics}
+
+The decision for the machine learning framework \texttt{keras} was motivated by its flexibility and simplicity. \cite{chollet2015keras}
+
+When setting up the machine learning model, one can already specify the first and last layer: The first (input) layer has to match the sample size of the incoming data, this can be already computed in advance. The length $len$ for block size $n$ is $2\cdot\left(2^n\times 2^n \right)$. The factor 2 comes from a preprocessing step, where the complex values are mapped to a second real picture, since the fitting procedure usually does not expect complex numbers. The last layer is a one node sigmoid, as the target output is the one-dimensional classification in $\left[0,1\right]$.
+
+For small sample sizes, there exist various approaches to choose the right amount of layers and regularization methods \cite{Olson2018,Feng2019}, which cannot be generalized, as they heavily depend on feature size and target dimension. As a rule of thumb the approximation was used that each weight should be influenced by at least seven samples. Using this we get from 500 samples roughly 70 weights.
+%todo select amount of layers, nodes, dropout for regularization
 
 
-\subsubsection{Machine Learning Models and Error Metrics}
+The optimizer Adam was chosen, because it is computationally efficient,
+has little memory requirements. \cite{Kingma2014}
 
-A neural network was used. As the sample size was %todo,
-a number of layers was selected to avoid overfitting.
-Dropout for regularization.
+For a two label classification problem, it is useful to use cross-entropy as a loss metric, as the penalty increases exponentially the further one deviates from the correct prediction.\cite{Goodfellow-et-al-2016}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/cross_entropy}
+\caption{Cross Entropy Loss}
+\label{fig:cross_entropy}
+\end{figure}
+The definition for a two class cross-entropy loss can be found in equation \ref{cross-loss}, where $y \in \{0,1\}$ is the true class and $\hat{y}\in\left[0,1\right]$ the predicted probability. This loss is also plotted in Figure \ref{fig:cross_entropy}.
+\begin{equation}
+L(\hat{y}, y)=-\left(y\log(\hat{y})+(1-y)\log(1-\hat{y})\right)\label{cross-loss}
+\end{equation}
 
-Cite Low sample size techniques:
+\subsection{Extraction of critical disorder strength $W_c$}
 
-Prominent optimzer Adam was used which has these and that strengths.
-For a binary classification problem, it is common to use as a loss binary crossentropy:
+To fit for the critical disorder strength $W_c$, two functions were compared. The logistic Fermi-Dirac like function:
+\begin{align}
+\text{L} \colon \;\mathbb {R} &\to \left[0,1\right]\\
+\ W_{pred}&\mapsto \frac{1}{\exp\left(-\alpha \left(W_{pred}-W_c\right)\right)+1}
+\end{align}
+and the heaviside function:
+\begin{align}
+\text{H} \colon \;
+\mathbb {R} &\to \{0,1\}\\
+\ W_{pred}&\mapsto 
+\begin{cases}
+0:&W_{pred}<W_c\\1:&W_{pred}\geq W_c
+\end{cases}
+	\end{align}
+The fully delocalized phase is defined as $0$ and fully localized as $1$. Whereas the heaviside function has an abrupt step and only maps to the extrema, the logistic function serves as a smoother option for a transition, depending on the parameter $alpha$. The motivation came also from an optimizers view: Differentiable functions are easier to fit for the computer.\cite{Kyurkchiev2015} Therefore, the logistic function was used to extract $W_c$ with the empiric decision of $\alpha=50$.
 
-%todo: formula
+\subsection{Limitations for parameter range and resolution}
 
-Loss: BinaryCrossentropy from \url{https://keras.io/api/losses/probabilistic_losses/#binary_crossentropy-function}:
-Computes the cross-entropy loss between true labels and predicted labels.
-
-Reason:
-Use this cross-entropy loss when there are only two label classes (assumed to be 0 and 1). For each example, there should be a single floating-point value per prediction.
-
-\subsubsection{$W_c$ finder}
-
-
-Fit with step like function: Candidates: logistic, heaviside
-
-Choose logisitc nicer, because differentiable and transition is not abrupt?%todo
+\begin{enumerate}
+	\item System size $L$: Limited by computing time of eigenvalue solver. For the system size $L=12$, one calculation lasted approximately one minute.
+	\item Block size $n$: 500 samples, $L=9$, $n=8$ required 4 GB of storage for the training set, exceeding the machines performance during model fitting. Therefore, $n=7$ was found to be sufficient for all system sizes.
+	\item Sample size: 500 samples can be generated for $L=12$, $n_{max}=7$ in approximately 9 hours. This was found to be a sufficient sample size.
+	\item $W$ range and resolution for the testing set: Since each point of a test set comes with a Hamiltonian with randomly drawn $h_i\in\left[-W,W\right]$, a decent amount of variance can be expected for the phase prediction. As we want to extract the phase cange in general, and are not interested in the particular phase predictions of one specific Hamiltonian we choose to regularize the prediction by averaging over five predicted samples.
+\end{enumerate}
+%Training Set N=9 completed after 0.9669864177703857 seconds.
+%Training Set N=10 completed after 5.634985685348511 seconds.
+%Training Set N=11 completed after 25.606987714767456 seconds.
+%Training Set N=12 completed after 139.2209861278534 seconds.
 
 
 
+\section{Results}
 
-\section{Results}%todo: Action title
+\subsection{Generation of reduced density matrix training set}
 
-\subsection{Generation of density matrix training set}
+The parameter range for the computation of the reduced density matrices can be found in Table \ref{tab:par_train}. The total computation time was 16.5 h, where 12.5 h where solely needed to compute the ground states of the $L=12$ system.
 
-Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 500. Measure of variation in the test set??
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{rl}
+		\hline
+		Parameter & Range or Set \\
+		\hline
+		\hline 
+	\textbf{System size:} & $L \in \{9, 10, 11, 12\}$ \\ 
+		\textbf{Block size:} & $n \in \{1, 2, 3, 4, 5, 6, 7\}$ \\ 
+		\textbf{Repetitions:} & $r=500$\\
+		\hline
+	\end{tabular} 
+	\caption{Parameter choice for training set generation}\label{tab:par_train}
+\end{table}
 
-\begin{figure*}[h!]
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N10_trainingset_groundstate_Wmax0.5.pdf}
-		\subcaption{Ergodic phase L = 10.}
+In order to give some visual intuition, Figure \ref{fig:groundstate} shows realizations for different block sizes and phases.
+\onecolumngrid
+\begin{center}
+\begin{figure}[H]
+	\centering	
+	\begin{subfigure}[c]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax0.5.pdf}
+		\subcaption{extended phase, $n=4$.}
 	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax0.5.pdf}
-		\subcaption{Ergodic phase L = 11.}
+	\begin{subfigure}[c]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{../results/groundstates/N12n4_trainingset_groundstate_Wmax8.0.pdf}
+		\subcaption{localized phase, $n=4$.}
 	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N12_trainingset_groundstate_Wmax0.5.pdf}
-		\subcaption{Ergodic phase L = 12.}
+	\begin{subfigure}[c]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{../results/groundstates/N12n5_trainingset_groundstate_Wmax0.5.pdf}
+		\subcaption{extended phase, $n=5$.}
 	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N10_trainingset_groundstate_Wmax8.0.pdf}
-		\subcaption{Localized phase L = 10.}
+	\begin{subfigure}[c]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{../results/groundstates/N12n5_trainingset_groundstate_Wmax8.0.pdf}
+		\subcaption{localized phase, $n=5$.}
 	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N11_trainingset_groundstate_Wmax8.0.pdf}
-		\subcaption{Localized phase L = 11.}
-	\end{subfigure}
-	\begin{subfigure}[c]{0.3\textwidth}
-		\includegraphics[width=\textwidth]{../results/N12_trainingset_groundstate_Wmax8.0.pdf}
-		\subcaption{Localized phase L = 12.}
-	\end{subfigure}
-	\caption{Real part of the density matrix of an ergodic/localized phase for different system sizes L.}
-\end{figure*}
+	\caption{Real part of the density matrix of an ergodic and localized phases for block sizes $n=\{4, 5\}$ and system size $L=12$.}
+	\label{fig:groundstate}
+\end{figure}
+\end{center}
+\twocolumngrid
+The visual inspection indicates that the density matrix of the localized phase has a sharp maximum at the preferred state that is forced by the random disorder strength. The extended phase shows a checkerboard pattern structure, which reflects that some configurations are more preferred than others. These unpreferred states are related to neighboring unaligned spins. Another observation is that the density matrix reductions of the full groundstate conserved these properties perfectly, when comparing $n=4$ to $n=5$. This observation was also made for all other system and block sizes.
 
+%todo: Measure of variation in the test set??
 
 %\begin{figure}
 %	\begin{subfigure}[c]{0.2\textwidth}
@@ -240,23 +277,18 @@ Chosen parameters: $L \in \{10, 11, 12\}$. Repetitions: 500. Measure of variatio
 %	\caption{Zwei Bilder mit Subfigure nebeneinander}
 %\end{figure}
 
+\subsection{Model training}
 
-Plots: 
-What is computationally realizable in 1h concerning time?
-The training set was sufficiently large enough 
-
-We only need M Eigenstates
-
-This is how corresponding density matrices look like
-
-This will be our parameter space for n, L
+Before we can predict the phase of a newly generated test set, we have to train the neural network with our available training data. For each system and block size a separate model was trained, as a different system size might influence the physical behavior due to open boundary conditions.
 
 \subsection{Prediction of extended vs localized phase}
+
+The first step
 
 Training and validation scores:
 
 \newpage
-\begin{figure*}[h!]
+\begin{figure*}[H]
 	\begin{subfigure}[c]{0.3\textwidth}
 		\includegraphics[width=\textwidth]{../results/N10_accuracy_loss_epochs}
 		\subcaption{$N=10$}
@@ -284,7 +316,7 @@ Now we generate testing set with $W_{max} \in \left[0,4\right]$. We suspect $W_c
 We fit a logistic curve and extract $W_c$ as a parameter.
 
 \newpage
-\begin{figure*}[h!]
+\begin{figure}[H]
 	\begin{subfigure}[c]{0.3\textwidth}
 		\includegraphics[width=\textwidth]{../results/N10_predict_wc}
 		\subcaption{$N=10$}
@@ -301,7 +333,7 @@ We fit a logistic curve and extract $W_c$ as a parameter.
 		\label{fig:N12_predict_wc}
 	\end{subfigure}
 	\caption{Phase prediction with localized and ergodic phase defined as 1, 0.}
-\end{figure*}
+\end{figure}
 
 
 These are our $W_c$ depending on n, L.
@@ -330,29 +362,40 @@ $W_c$ prediction coincides with the expectation (yes/no)
 
 $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
 
-Citations are numerical\cite{epr}, some more citations~\cite{feyn54,Bire82,Berman1983,witten2001,Davies1998}. 
-
 \bibliography{zotero}
 %\bibliography{bibsamp}% Produces the bibliography via BibTeX.
 
-
+\newpage
 \appendix
 
 
 \begin{widetext}
 \section{Code listing} \label{app:codes}
-Please copy your code in the appendix.
-\begin{lstlisting}[language=Python]
-"""
+The code consists essentially of four different files, which are callable through a main function, but can also be run separately. Every file serves a number of different purposes as listed below.
 
-Description
+\begin{enumerate}
+	\item \textbf{generate\_training\_set.py}: Here, the training set is generated and some example plots of ground states are saved to the results folder. The training sets are saved in the \texttt{training\_sets} folder, where they are numbered with their system and block size.
+	\item \textbf{model\_save\_train.py}: First, models are generated that automatically match the input data of different block sizes $n$, afterwards, they are trained with a certain amount of epochs and batch sizes. The history of the validation and accuracy are plotted individually into the results folder.
+	\item \textbf{generate\_test\_set.py}: A set of reduced density matrices for ground states in the intermediate regime is generated.
+	%todo: plot state near W=1
+	\item \textbf{load\_model\_get\_wc.py}: The models for each system and block size make phase predictions to the respective test sets, extract $W_c$ and plot everything together as a heat map.
+\end{enumerate}
 
-"""
+\subsection{Training set generation}
+\lstinputlisting[language=Python]{../generate_training_set.py}
 
-import numpy as np
+\subsection{Model Training}
+\lstinputlisting[language=Python]{../model_save_train.py}
 
-code
-\end{lstlisting}
+\subsection{Test set generation}
+\lstinputlisting[language=Python]{../generate_test_set.py}
+
+\subsection{Prediction and evaluation of $W_c$}
+\lstinputlisting[language=Python]{../load_model_get_wc.py}
+%\begin{lstlisting}[language=Python]
+%%\include{file}
+%\include{}
+%\end{lstlisting}
 \end{widetext}
 
 

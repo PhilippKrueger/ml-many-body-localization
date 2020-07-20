@@ -4,8 +4,10 @@ from scipy.optimize import curve_fit
 
 
 def preprocess_test_data(path):
+    print(path)
     data = load_pickle(path)
     X = [item[0] for item in data]
+    print("Input shape (Ws, Imagedim1, Imagedim2): ", np.shape(X))
     X = np.reshape(X, (np.shape(X)[0], np.shape(X)[1], np.shape(X)[2], 1))
     X = np.asarray(np.concatenate((np.real(X), np.imag(X)), axis=3))
     W = np.reshape(np.asarray([item[1] for item in data]), (np.shape(data)[0], 1))
@@ -13,7 +15,7 @@ def preprocess_test_data(path):
 
 
 def logistic(x, a):
-    return 1 / (1 + np.exp(-100 * (x - a)))
+    return 1 / (1 + np.exp(-50 * (x - a)))
 
 
 def heaviside(x, a):
@@ -32,18 +34,10 @@ def get_wc(N, n, W_max):
 
     # print(W_max, np.shape(W_max))
     popt, pcov = curve_fit(logistic, W_max, np.reshape(state_prediction, (len(state_prediction))))  # state_prediction.astype(np.float))
+    # plot_wc_fit(N,popt,state_prediction)
+    return popt[0], n #, N, np.shape(X[0])[0]
 
-    # fixme plot all n together!!
-    fig, ax1 = plt.subplots()
-    ax1 = plt.scatter(W_max, state_prediction)
-    ax1 = plt.plot(W_max, logistic(W_max, *popt), 'k')
 
-    plt.title('Phase prediction $N = $' + str(N) + ", $W_c = $" + "{0:.3g}".format(popt[0]))
-    plt.ylabel('Probability of localized phase')
-    plt.xlabel('$W_{max}$')
-    plt.legend(['Logistic fit', 'Predicted phase'], loc='upper left')
-    plt.savefig('results/N' + str(N) + '_predict_wc.pdf')
-    return popt[0], N, np.shape(X[0])[0]
 
 
 def plot_wc_dependencies(Ns, W_max):
@@ -68,9 +62,79 @@ def plot_wc_dependencies(Ns, W_max):
     ax1 = plt.scatter(Wc_dependencies[:, 2], Wc_dependencies[:, 0])
     plt.savefig('results/Wc_n_dependency.pdf')
     plt.close()
+    pass
+
+class HeatMapPlotter:
+
+    def __init__(self, Ns, Ws, n_max):
+        self.Ns = Ns
+        self.Ws = Ws
+        self.n_max = n_max
+        self.W_preds = self.predict_w()
+        self.W_c_fit = self.fit_wc()
+
+    def predict_w(self):
+        W_preds = {system_size : [] for system_size in self.Ns}
+        for N in self.Ns:
+            for n in range(1, self.n_max + 1):
+                model = load_model('lanczos/models/N' + str(N) + 'n' + str(n) + '_Model')
+                X, W = preprocess_test_data('lanczos/test_sets/N' + str(N) + 'n' + str(n) + '_Testset')
+                W_preds[N].append(model.predict(X))
+        return W_preds
+
+    def fit_wc(self):
+        W_c_fit = {system_size : [] for system_size in self.Ns}
+        for N in self.Ns:
+            for n in range(1, self.n_max + 1):
+                W_c_fit[N].append(get_wc(N, n, self.Ws))
+        return W_c_fit
+
+    def plot_wc_heatmap(self):
+        """
+        W_pred: W x n array
+        W_c_fit: W_c(n) x 1 array
+        :return:
+        """
+        for N in self.Ns:
+            W_pred = np.asarray(self.W_preds[N])
+            W_pred = np.reshape(W_pred, (np.shape(W_pred)[0],np.shape(W_pred)[1]))
+            W_c_fit = np.array(self.W_c_fit[N])
+
+            # print(W_c_fit)
+            # print(np.shape(W_c_fit))
+
+            # W_c_fit = np.reshape(W_c_fit, (np.shape(W_c_fit)[0], np.shape(W_c_fit)[1]))
+            fig, ax = plt.subplots()
+            plt.title("Predicted phases and $W_c$ over block size $n$, $N=$" + str(N))
+            pos = ax.imshow(W_pred, extent=(0, 4, 0, 7), aspect=0.5, cmap='bwr')
+            fig.colorbar(pos, ax=ax)
+            ax.scatter(W_c_fit[:,0], W_c_fit[:,1]-0.5, s=100, c="w", marker='^', label='$W_c$', edgecolors="k")
+            plt.ylabel("Block size n")
+            plt.xlabel("Predicted disorder strength $W_{predicted}$")
+            ax.legend()
+            plt.savefig('results/Wc/N'+str(N)+'_Wc_n_dependency.pdf')
+            plt.close()
+        pass
+
+    def plot_wc_fit(self, N, popt, state_prediction):
+        fig, ax1 = plt.subplots()
+        ax1 = plt.scatter(self.Ws, state_prediction)
+        ax1 = plt.plot(self.Ws, logistic(self.Ws, *popt), 'k')
+
+        plt.title('Phase prediction $N = $' + str(N) + ", $W_c = $" + "{0:.3g}".format(popt[0]))
+        plt.ylabel('Probability of localized phase')
+        plt.xlabel('$W_{max}$')
+        plt.legend(['Logistic fit', 'Predicted phase'], loc='upper left')
+        plt.savefig('results/N' + str(N) + '_predict_wc.pdf')
+        pass
+
+    # fixme add n plots over N
 
 
 if __name__ == "__main__":
-    Ns = [9, 10]
-    W_max = np.arange(0., 4.0, 0.05)
-    plot_wc_dependencies(Ns, W_max)
+    Ns = [11, 12]
+    Ws = np.arange(0., 4.0, 0.05)
+    n_max = 7
+    # plot_wc_dependencies(Ns, Ws)
+    heat_map_plotter = HeatMapPlotter(Ns, Ws, n_max)
+    heat_map_plotter.plot_wc_heatmap()

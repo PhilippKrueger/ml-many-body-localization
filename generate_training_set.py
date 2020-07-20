@@ -5,12 +5,12 @@ from scipy.sparse.linalg import ArpackNoConvergence
 import qutip
 
 
-def generate_training_set(Ns, Ws, repetitions):
+def generate_training_set(Ns, Ws, n_max, repetitions):
     start_time = time.time()
     for N in Ns:
-        training_set_generator = TrainingSetGenerator(N, Ws, repetitions)
+        training_set_generator = TrainingSetGenerator(N, Ws, n_max, repetitions)
         print("Training Set N="+str(N)+" completed after %s seconds." % (time.time() - start_time))
-        for n in range(1,N+1):
+        for n in range(1,n_max+1):
             save_groundstate_figures(N, training_set_generator.training_set[n], n)
             save_pickle("lanczos/training_sets/N" + str(N) + "n" + str(n) + "_Trainset", training_set_generator.training_set[n])
     print("--- Training set generation lasted %s seconds ---" % (time.time() - start_time))
@@ -22,7 +22,7 @@ def save_groundstate_figures(N, training_set, n): # reduced_rho, W, self.N, n, E
     localized = [item for item in training_set if item[1] == 8 and item[-1] == 0][0] # len: repetitions
 
     fig, ax1 = plt.subplots()
-    pos = ax1.imshow(np.real(ergodic[0]))
+    pos = ax1.imshow(np.real(ergodic[0]), cmap='bwr')
     fig.colorbar(pos, ax=ax1)
     plt.title("Reduced density matrix for $n=$" + str(n) + " consecutive sites \n at $E=$"
               + str(round(ergodic[4], 2)) + " for $W=$" + str(ergodic[1]) + ", $N = $" + str(N))
@@ -31,7 +31,7 @@ def save_groundstate_figures(N, training_set, n): # reduced_rho, W, self.N, n, E
     plt.close()
 
     fig, ax1 = plt.subplots()
-    pos = ax1.imshow(np.real(localized[0]))
+    pos = ax1.imshow(np.real(localized[0]), cmap='bwr')
     fig.colorbar(pos, ax=ax1)
     plt.title("Reduced density matrix for $n=$" + str(localized[3]) + " consecutive sites \n at $E=$"
               + str(round(localized[4], 2)) + " for $W=$" + str(localized[1]) + ", $N = $" + str(N))
@@ -48,8 +48,9 @@ def save_pickle(filename, data):
 
 class TrainingSetGenerator:
 
-    def __init__(self, N, Ws, repetitions):
+    def __init__(self, N, Ws, n_max, repetitions):
         self.N = int(N)  # Lattice sites
+        self.n_max = n_max
         self.repetitions = repetitions
         self.Ws = Ws
         self.training_set = self.generate_training_set_m_lanczos_list()  # self.generate_training_set_list()
@@ -59,16 +60,16 @@ class TrainingSetGenerator:
         Returns training set with shape samples x [density matrix, W, lattice sites, block size, ground state energy]
         :return: training set
         """
-        training_set = {consecutive_spins: [] for consecutive_spins in range(1,self.N+1)}
+        training_set = {consecutive_spins: [] for consecutive_spins in range(1,self.n_max+1)}
         for W in self.Ws:
             for rep in range(self.repetitions):
                 H = gen_hamiltonian_random_h(self.N, W=W, J=1.)
-                E, v = qutip.Qobj(H).groundstate()
-                rho = np.outer(v, v) #vs[:, 0]
-                for n in range(1, self.N):
+                E, v = qutip.Qobj(H).groundstate() # fixme might not be sparse, make sparse=True!!!
+                rho = np.outer(v, v)
+                for n in range(1, self.n_max+1):
                     reduced_rho = self.get_partial_trace(rho, n) # must trace out something
                     training_set[n].append([reduced_rho, W, self.N, n, E, rep])
-                training_set[self.N].append([rho, W, self.N, self.N, E, rep])
+                # training_set[self.N].append([rho, W, self.N, self.N, E, rep])
         return training_set
 
     def get_partial_trace(self, rho, n):
@@ -101,7 +102,14 @@ class TrainingSetGenerator:
 
 if __name__ == "__main__":
     Ns = [10]
+    n_max = 7
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 500  # 55 min
-    generate_training_set(Ns, Ws, repetitions)
+    repetitions = 500
+    generate_training_set(Ns, Ws, n_max, repetitions)
+
+    # N=09, n=7, rep=10 7s=> rep=500: 6 min
+    # N=10, n=7, rep=10 31s => rep=500: 25 min
+    # N=11, n=7, rep=10 182s=> rep=500: 2,5 h
+    # N=12, n=7, rep=10 00s=> rep=500
+
 

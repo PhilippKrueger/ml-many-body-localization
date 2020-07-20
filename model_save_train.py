@@ -38,8 +38,9 @@ def mean_pred(y_true, y_pred):
 
 class ModelTrainer:
 
-    def __init__(self, x, y, N):
+    def __init__(self, x, y, N, n_max):
         self.N = N
+        self.n_max = n_max
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3, random_state=42)
         self.model = self.generate_model_sparse()
 
@@ -75,7 +76,6 @@ class ModelTrainer:
         pass
 
     def fit_model(self, batch_size, epochs):
-        tensorboard_callback = callbacks.TensorBoard(log_dir="./logs") #fixme not sure how to use this
         history = self.model.fit(self.X_train, self.y_train,
                        batch_size=batch_size,
                        epochs=epochs,
@@ -99,17 +99,17 @@ class ModelTrainer:
         ax1 = plt.plot(history.history['val_loss'])
         ax1 = plt.xlabel('Epoch')
         ax1 = plt.legend(['Training set accuracy', 'Validation set accuracy','Training set loss', 'Validation set loss']
-                         , loc='upper left')
-        plt.savefig("results/N"+str(self.N)+"_accuracy_loss_epochs.pdf")
+                         , loc='center right')
+        plt.savefig("results/accuracy_loss_epochs/N"+str(self.N)+"n"+str(self.n_max)+"_accuracy_loss_epochs.pdf")
         pass
 
-def train_save_model(Ns, batch_size, epochs):
+def train_save_model(Ns, n_max, batch_size, epochs):
     start_time = time.time()
     for N in Ns:
         start_model_time = time.time()
-        for n in range(1, N+1):
+        for n in range(1, n_max+1):
             X, y = preprocess_training_data("lanczos/training_sets/N"+str(N)+"n"+str(n)+"_Trainset")
-            model_trainer = ModelTrainer(X, y, N)
+            model_trainer = ModelTrainer(X, y, N, n_max)
             history = model_trainer.fit_model(batch_size=batch_size,
                                               epochs=epochs)
             model_trainer.training_history(history)
@@ -122,8 +122,9 @@ def train_save_model(Ns, batch_size, epochs):
 
 if __name__ == "__main__":
     # Ns = [10, 11, 12]
-    Ns = [9, 10]
-    train_save_model(Ns,
+    Ns = [11, 12]
+    n_max = 7
+    train_save_model(Ns, n_max,
                      batch_size=70,
                      epochs=40)
 

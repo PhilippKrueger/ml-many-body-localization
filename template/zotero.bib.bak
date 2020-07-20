@@ -71,7 +71,122 @@
   url       = {https://doi.org/10.1103/physrevlett.69.2863},
 }
 
-@Article{,
+@Article{Zhang2019,
+  author    = {Wei Zhang and Lei Wang and Ziqiang Wang},
+  journal   = {Physical Review B},
+  title     = {Interpretable machine learning study of the many-body localization transition in disordered quantum Ising spin chains},
+  year      = {2019},
+  month     = feb,
+  number    = {5},
+  volume    = {99},
+  doi       = {10.1103/physrevb.99.054208},
+  publisher = {American Physical Society ({APS})},
+  url       = {https://doi.org/10.1103/physrevb.99.054208},
+}
+
+@Article{Rosenblatt1958,
+  author    = {F. Rosenblatt},
+  journal   = {Psychological Review},
+  title     = {The perceptron: A probabilistic model for information storage and organization in the brain.},
+  year      = {1958},
+  number    = {6},
+  pages     = {386--408},
+  volume    = {65},
+  doi       = {10.1037/h0042519},
+  publisher = {American Psychological Association ({APA})},
+  url       = {https://doi.org/10.1037/h0042519},
+}
+
+@Article{Gatys2015,
+  author        = {Leon A. Gatys and Alexander S. Ecker and Matthias Bethge},
+  journal       = {CoRR},
+  title         = {A Neural Algorithm of Artistic Style},
+  year          = {2015},
+  volume        = {abs/1508.06576},
+  archiveprefix = {arXiv},
+  bibsource     = {dblp computer science bibliography, https://dblp.org},
+  biburl        = {https://dblp.org/rec/journals/corr/GatysEB15a.bib},
+  eprint        = {1508.06576},
+  timestamp     = {Mon, 13 Aug 2018 16:48:03 +0200},
+  url           = {http://arxiv.org/abs/1508.06576},
+}
+
+@Article{Johansson2012,
+  author    = {Johansson, J.R. and Nation, P.D. and Nori, Franco},
+  journal   = {Computer Physics Communications},
+  title     = {QuTiP: An open-source Python framework for the dynamics of open quantum systems},
+  year      = {2012},
+  issn      = {0010-4655},
+  month     = {Aug},
+  number    = {8},
+  pages     = {1760–1772},
+  volume    = {183},
+  doi       = {10.1016/j.cpc.2012.02.021},
+  publisher = {Elsevier BV},
+  url       = {http://dx.doi.org/10.1016/j.cpc.2012.02.021},
+}
+
+@Article{Virtanen_2020,
+  author    = {Virtanen, Pauli and Gommers, Ralf and Oliphant, Travis E. and Haberland, Matt and Reddy, Tyler and Cournapeau, David and Burovski, Evgeni and Peterson, Pearu and Weckesser, Warren and et al.},
+  journal   = {Nature Methods},
+  title     = {SciPy 1.0: fundamental algorithms for scientific computing in Python},
+  year      = {2020},
+  issn      = {1548-7105},
+  month     = {Feb},
+  number    = {3},
+  pages     = {261–272},
+  volume    = {17},
+  doi       = {10.1038/s41592-019-0686-2},
+  publisher = {Springer Science and Business Media LLC},
+  url       = {http://dx.doi.org/10.1038/s41592-019-0686-2},
+}
+
+@Book{Kyurkchiev2015,
+  author = {Kyurkchiev, Nikolay and Markov, Svetoslav},
+  title  = {Sigmoid Functions Some Approximation and Modelling Aspects: Some Moduli in Programming Environment MATHEMATICA},
+  year   = {2015},
+  isbn   = {978-3-659-76045-7},
+  month  = {08},
+}
+
+@Book{Goodfellow-et-al-2016,
+  author    = {Ian Goodfellow and Yoshua Bengio and Aaron Courville},
+  publisher = {MIT Press},
+  title     = {Deep Learning},
+  year      = {2016},
+  note      = {\url{http://www.deeplearningbook.org}},
+}
+
+@Article{Feng2019,
+  author    = {Shuo Feng and Huiyu Zhou and Hongbiao Dong},
+  journal   = {Materials {\&} Design},
+  title     = {Using deep neural network with small dataset to predict material defects},
+  year      = {2019},
+  month     = jan,
+  pages     = {300--310},
+  volume    = {162},
+  doi       = {10.1016/j.matdes.2018.11.060},
+  publisher = {Elsevier {BV}},
+  url       = {https://doi.org/10.1016/j.matdes.2018.11.060},
+}
+
+@InCollection{Olson2018,
+  author    = {Olson, Matthew and Wyner, Abraham and Berk, Richard},
+  booktitle = {Advances in Neural Information Processing Systems 31},
+  publisher = {Curran Associates, Inc.},
+  title     = {Modern Neural Networks Generalize on Small Data Sets},
+  year      = {2018},
+  editor    = {S. Bengio and H. Wallach and H. Larochelle and K. Grauman and N. Cesa-Bianchi and R. Garnett},
+  pages     = {3619--3628},
+  url       = {http://papers.nips.cc/paper/7620-modern-neural-networks-generalize-on-small-data-sets.pdf},
+}
+
+@Article{Kingma2014,
+  author  = {Kingma, Diederik and Ba, Jimmy},
+  journal = {International Conference on Learning Representations},
+  title   = {Adam: A Method for Stochastic Optimization},
+  year    = {2014},
+  month   = {12},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
