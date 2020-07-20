@@ -1,5 +1,8 @@
 __pycache__/
 lanczos/
+!lanczos/training_sets/training_sets
+!lanczos/test_sets/test_sets
+!lanczos/models/models
 pickled/
 .idea
 *.aux
