@@ -90,15 +90,16 @@ class ModelTrainer:
         plt.xlabel('Training epoch')
 
         # "Loss"
-        ax1.set_ylabel('Log Loss')  # we already handled the x-label with ax1
-        ax1.set_yscale('log')
+        ax1.set_ylabel('Accuracy')  # we already handled the x-label with ax1
         ax1.tick_params(axis='y')
+
         ln1 = ax1.plot(history.history['loss'], label='Training set loss')
         ln2 = ax1.plot(history.history['val_loss'], label='Validation set loss')
 
         #  "Accuracy"
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-        ax2.set_ylabel('Accuracy')  # we already handled the x-label with ax1
+        ax2.set_ylabel('Logarithmic loss')  # we already handled the x-label with ax1
+        ax2.set_yscale('log')
         ax2.tick_params(axis='y')
         ln3 = ax2.plot(history.history['acc'], 'r', label='Training set accuracy')
         ln4 = ax2.plot(history.history['val_acc'], 'g', label='Validation set accuracy')
@@ -111,6 +112,7 @@ class ModelTrainer:
         plt.tight_layout()
         plt.savefig("results/accuracy_loss_epochs/N"+str(self.N)+"n"+str(n)+"_accuracy_loss_epochs.pdf")
         print("Scores for N=" + str(N) + ", n=" + str(n))
+        plt.close()
         self.score()
         pass
 

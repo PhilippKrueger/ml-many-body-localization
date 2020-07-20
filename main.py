@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Model training
     train_save_model(Ns, n_max,
                      batch_size=70,
-                     epochs=40)
+                     epochs=120) #40
 
     # Test set generation
     repetitions = 5
