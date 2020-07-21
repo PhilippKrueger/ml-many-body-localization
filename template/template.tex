@@ -83,6 +83,9 @@ The Hamiltonian of the Heisenberg model is shown in equation \ref{hamiltonian}. 
 %todo: nice picture with spins and all?
 
 \subsubsection{Expectations for the ground state}
+%todo:
+\url{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.91.081103}
+
 
 The expectation for the ground state is dependent on the ratio of the coupling and the local random field. 
 
@@ -319,7 +322,7 @@ The model training was executed by using a batch size of 70 and 200 epochs, wher
 An example of the accuracy and loss dependency on the number of epochs for system size $L=10$, and block sizes $n=\{1, 7\}$ is presented below in Figure \label{fig:val_acc}.%todo: more training epochs
 
 \onecolumngrid
-\begin{center}
+\begin{center}%todo: loss, accuracy heatmap plot
 	\begin{figure}[H]
 		\centering	
 		\begin{subfigure}[c]{0.45\textwidth}
@@ -336,7 +339,7 @@ An example of the accuracy and loss dependency on the number of epochs for syste
 \end{center}
 \twocolumngrid
 
-The overall losses for $n>1$ where always found to be $\approx 0.01$ with accuracies of $1.0$, whereas the models at $n=1$ showed larger losses of  $\approx 0.1$ and mostly acceptable accuracies near $1$.%todo: loss heatmap plot
+The overall losses for $n>1$ where always found to be $\approx 0.01$ with accuracies of $1.0$, whereas the models at $n=1$ showed larger losses of  $\approx 0.1$ and mostly acceptable accuracies near $1$.
 
 Figure \ref{fig:val_acc} illustrates that not only the scores for small block sizes were lower, but also the convergence rates. In conclusion, the scores show that the learning of the phases was prone to severe over-fitting and resulted in acceptable scores for the next step of prediction, where $n=1$ can be expected to have a worse performance during the prediction. This behavior was expected, when we notized the similarity for $n=1$ block size samples in the training set.
 
@@ -346,9 +349,13 @@ First, the testing set was generated. Following the parameter discussion in sect
 Five predicted phases are averaged at each point and plotted to a heat map. The fitted $W_c$ is plotted along in Figure \ref{fig:wcextractn}.
 
 \onecolumngrid
-\begin{center}
+\begin{center}%todo: annotate colorbar
 	\begin{figure}[H]
 		\centering	
+		\begin{subfigure}[c]{0.45\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/N8_Wc_n_dependency.pdf}
+			\subcaption{$L=8$}
+		\end{subfigure}
 		\begin{subfigure}[c]{0.45\textwidth}
 			\includegraphics[width=\textwidth]{../results/Wc/N9_Wc_n_dependency.pdf}
 			\subcaption{$L=9$}
@@ -358,13 +365,13 @@ Five predicted phases are averaged at each point and plotted to a heat map. The 
 			\subcaption{$L=10$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
+			\includegraphics[width=\textwidth]{../results/Wc/N11_Wc_n_dependency.pdf}
 			\subcaption{$L=11$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
+			\includegraphics[width=\textwidth]{../results/Wc/N12_Wc_n_dependency.pdf}
 			\subcaption{$L=12$}
-		\end{subfigure}%todo: add N11 N12 figures
+		\end{subfigure}
 		\caption{Dependency of the phase transition on block size $n$ for different system sizes.}
 		\label{fig:wcextractn}
 	\end{figure}
@@ -375,26 +382,38 @@ In conclusion, the predicted critical disorder strength $W_c$ decayed, when mode
 
 \subsubsection{Dependeny on system size}
 
-\lipsum[1]%todo: write
+something something%todo: write
 
 
 \onecolumngrid
 \begin{center}
 	\begin{figure}[H]
 		\centering	
-		\begin{subfigure}[c]{0.45\textwidth}
+		\begin{subfigure}[c]{0.4\textwidth}
 			\includegraphics[width=\textwidth]{../results/Wc/n1_Wc_N_dependency.pdf}
 			\subcaption{$n=1$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n2_Wc_N_dependency.pdf}
+			\subcaption{$n=2$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.4\textwidth}
 			\includegraphics[width=\textwidth]{../results/Wc/n3_Wc_N_dependency.pdf}
 			\subcaption{$n=3$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n4_Wc_N_dependency.pdf}
+			\subcaption{$n=4$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.4\textwidth}
 			\includegraphics[width=\textwidth]{../results/Wc/n5_Wc_N_dependency.pdf}
 			\subcaption{$n=5$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth]{../results/Wc/n6_Wc_N_dependency.pdf}
+			\subcaption{$n=6$}
+		\end{subfigure}
+		\begin{subfigure}[c]{0.4\textwidth}
 			\includegraphics[width=\textwidth]{../results/Wc/n7_Wc_N_dependency.pdf}
 			\subcaption{$n=7$}
 		\end{subfigure}
@@ -402,7 +421,7 @@ In conclusion, the predicted critical disorder strength $W_c$ decayed, when mode
 		\label{fig:wcextract}
 	\end{figure}
 \end{center}
-\twocolumngrid
+\twocolumngrid%todo: compare with introduction
 
 
 %todo: Plot N dependency
@@ -428,11 +447,12 @@ $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
 
 \begin{widetext}
 \section{Code listing} \label{app:codes}
-The code consists essentially of four different files, which are callable through a main function, but can also be run separately. Every file serves a number of different purposes as listed below.
+The code consists essentially of five different files, which are callable through a main function, but can also be run separately. Every file serves a number of different purposes as listed below.
 
 \begin{enumerate}
 	\item \textbf{generate\_training\_set.py}: Here, the training set is generated and some example plots of ground states are saved to the results folder. The training sets are saved in the \texttt{training\_sets} folder, where they are numbered with their system and block size.
-	\item \textbf{model\_save\_train.py}: First, models are generated that automatically match the input data of different block sizes $n$, afterwards, they are trained with a certain amount of epochs and batch sizes. The history of the validation and accuracy are plotted individually into the results folder.
+	\item \textbf{ed.py}: The training set is generated by using the functions from the tutorial. A new function was added that generates the Hamiltonian using the random local disorder strength.
+	\item \textbf{model\_save\_train.py}: First, models are generated that automatically match the input data of different block sizes $n$, afterwards, they are trained with a certain amount of epochs and batch sizes. The history of the validation and accuracy is plotted individually into the results folder.
 	\item \textbf{generate\_test\_set.py}: A set of reduced density matrices for ground states in the intermediate regime is generated.
 	%todo: plot state near W=1
 	\item \textbf{load\_model\_get\_wc.py}: The models for each system and block size make phase predictions to the respective test sets, extract $W_c$ and plot everything together as a heat map.
@@ -449,6 +469,9 @@ The code consists essentially of four different files, which are callable throug
 
 \subsection{Prediction and evaluation of $W_c$}
 \lstinputlisting[language=Python]{../load_model_get_wc.py}
+
+\subsection{Exact diagonalization}
+\lstinputlisting[language=Python]{../ed.py}
 %\begin{lstlisting}[language=Python]
 %%\include{file}
 %\include{}

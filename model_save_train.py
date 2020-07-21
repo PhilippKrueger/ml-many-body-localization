@@ -60,9 +60,9 @@ class ModelTrainer:
         # model.add(layers.Conv2D(32, (6, 6), activation='relu', input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
         # model.add(layers.MaxPooling2D((4, 4)))
         model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
-        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2')), # #
+        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2')), # fixme maybe try l2 kernel reg.?
         model.add(layers.Dense(64, activation='relu', bias_regularizer='l2')) # fixme use kernel regularizer!! l1 loss as squared error is dangerous below 1
-        model.add(layers.Dense(1, activation='sigmoid'))
+        model.add(layers.Dense(1, activation='sigmoid')) # fixme drop out layer
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])#loss used to be mae loss # metrics: 'mean_absolute_error', 'mean_squared_error',
         return model
 
@@ -134,11 +134,8 @@ def train_save_model(Ns, n_max, batch_size, epochs):
 
 
 if __name__ == "__main__":
-    # Ns = [10, 11, 12]
-    Ns = [10]
+    Ns = [9, 10]
     n_max = 7
     train_save_model(Ns, n_max,
                      batch_size=70,
                      epochs=40)
-
-    # N = 12 Model training lasted 537.23 seconds
