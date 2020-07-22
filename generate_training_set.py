@@ -1,7 +1,7 @@
 from ed import *
 import time
 import pickle
-import qutip
+# import qutip
 import matplotlib.pyplot as plt
 from tqdm import trange, tqdm
 from scipy.sparse.linalg import eigsh, ArpackNoConvergence
@@ -91,7 +91,7 @@ class TrainingSetGenerator:
                 for i in range(len(Es)):
                     rho = np.outer(vs[:,i],vs[:,i])
                     for n in range(1, self.n_max + 1):
-                        reduced_rho = self.get_partial_trace_mid(rho, n)
+                        reduced_rho = self.get_partial_trace_first(rho, n) # fixme
                         # if Es[i]:
                         training_set[n].append([reduced_rho, W, self.N, n, Es[i], rep])
                         # else:
@@ -99,17 +99,17 @@ class TrainingSetGenerator:
         print(np.shape(training_set[n]), np.shape(training_set[n][0]))
         return training_set
 
-    def get_partial_trace_mid(self, rho, n):
-        """
-        calculates partial trace of middle n sites
-        :param rho: full density matrix
-        :param n: block size
-        :return: reduced density matrix
-        """
-        kept_sites = self.get_keep_indices(n)
-        qutip_dm = qutip.Qobj(rho, dims=[[2] * self.N] * 2)
-        reduced_dm_via_qutip = qutip_dm.ptrace(kept_sites).full()
-        return reduced_dm_via_qutip
+    # def get_partial_trace_mid(self, rho, n):
+    #     """
+    #     calculates partial trace of middle n sites
+    #     :param rho: full density matrix
+    #     :param n: block size
+    #     :return: reduced density matrix
+    #     """
+    #     kept_sites = self.get_keep_indices(n)
+    #     qutip_dm = qutip.Qobj(rho, dims=[[2] * self.N] * 2)
+    #     reduced_dm_via_qutip = qutip_dm.ptrace(kept_sites).full()
+    #     return reduced_dm_via_qutip
 
     def get_partial_trace_first(self, rho, n):
         """
