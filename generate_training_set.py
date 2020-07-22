@@ -138,10 +138,10 @@ class TrainingSetGenerator:
 
 
 if __name__ == "__main__":
-    Ns = [8, 9, 10, 11, 12]
+    Ns = [12]
     n_max = 6
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 10
+    repetitions = 100
     generate_training_set(Ns, Ws, n_max, repetitions)
 
     # N=09, n=7, rep=10 7s=> rep=500: 6 min
