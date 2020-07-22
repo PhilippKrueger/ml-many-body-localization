@@ -3,7 +3,7 @@ import time
 import pickle
 # import qutip
 import matplotlib.pyplot as plt
-from tqdm import trange, tqdm
+# from tqdm import trange, tqdm
 from scipy.sparse.linalg import eigsh, ArpackNoConvergence
 from operator import itemgetter
 
@@ -77,7 +77,7 @@ class TrainingSetGenerator:
         :return: training set
         """
         training_set = {consecutive_spins: [] for consecutive_spins in range(1, self.n_max + 1)}
-        for rep in trange(self.repetitions):
+        for rep in range(self.repetitions):
             for W in self.Ws:
                 h = np.random.uniform(-W, W, size=self.N)
                 H = gen_hamiltonian_lists(self.N, h, J=1)
