@@ -196,4 +196,17 @@
   year         = {2015},
 }
 
+@Article{Luitz2015,
+  author    = {David J. Luitz and Nicolas Laflorencie and Fabien Alet},
+  journal   = {Physical Review B},
+  title     = {Many-body localization edge in the random-field Heisenberg chain},
+  year      = {2015},
+  month     = feb,
+  number    = {8},
+  volume    = {91},
+  doi       = {10.1103/physrevb.91.081103},
+  publisher = {American Physical Society ({APS})},
+  url       = {https://doi.org/10.1103/physrevb.91.081103},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

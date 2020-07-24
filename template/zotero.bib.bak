@@ -189,4 +189,14 @@
   month   = {12},
 }
 
+@Misc{chollet2015keras,
+  author       = {Chollet, Fran\c{c}ois and others},
+  howpublished = {\url{https://keras.io}},
+  title        = {Keras},
+  year         = {2015},
+}
+
+@Article{,
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}

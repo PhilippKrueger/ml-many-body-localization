@@ -1,20 +1,57 @@
+from dataset_preparation import load_pickle
 from model_save_train import *
 from scipy.optimize import curve_fit
 
+class WcPlotter:
 
-def preprocess_test_data(path):
-    """
-    :param path: Path to pickled test_set
-    :return: X: reduced density matrices, W: Disorder strength that was used for generating the sample
-    """
-    print("Accessing ", path)
-    data = load_pickle(path)
-    X = [item[0] for item in data]
-    # print("Input shape (Ws, Imagedim1, Imagedim2): ", np.shape(X))
-    X = np.reshape(X, (np.shape(X)[0], np.shape(X)[1], np.shape(X)[2], 1))
-    X = np.asarray(np.concatenate((np.real(X), np.imag(X)), axis=3))
-    W = np.reshape(np.asarray([item[1] for item in data]), (np.shape(data)[0], 1))
-    return X, W
+    def __init__(self, Ns, ns, Ws):
+        self.Ws = Ws
+        self.Ns = Ns
+        self.ns = ns
+        self.predictions =
+
+    def plot_all(self):
+        titles = []
+        for N in self.Ns:
+            array = self.predictions[""]
+            wcs = self.get_wc(array)
+            xlabel = "Disorder strength $W$"
+            ylabel = "Block size n"
+            title = str("Predicted phases and critical disorder strength $W_c$ "
+            + "\n over block size $n$ at system size $N=$" + str(N))
+            self.plot_heat_map(wcs, array, xlabel, ylabel, title)
+            plt.savefig('results/Wc/N' + str(N) + '_Wc_n_dependency.pdf')
+            plt.close()
+        pass
+
+    def plot_heat_map(self, wcs, array, xlabel, ylabel, title):
+        W_pred = np.asarray(self.W_preds[N])
+        W_pred = np.reshape(W_pred, (np.shape(W_pred)[0], np.shape(W_pred)[1]))
+        W_c_fit = np.array(self.W_c_fit[N])
+
+        # W_c_fit = np.reshape(W_c_fit, (np.shape(W_c_fit)[0], np.shape(W_c_fit)[1]))
+        fig, ax = plt.subplots()
+        plt.title(title)
+        plt.text(0.5, 3.5, 'extended', {'color': 'w', 'fontsize': 12},
+                 horizontalalignment='left',
+                 verticalalignment='center',
+                 rotation=90,
+                 )
+        plt.text(3.5, 3.5, 'localized', {'color': 'k', 'fontsize': 12},
+                 horizontalalignment='left',
+                 verticalalignment='center',
+                 rotation=90,
+                 )
+        pos = ax.imshow(array, extent='auto', aspect=0.5, cmap='bwr')
+        fig.colorbar(pos, ax=ax)
+        plt.ylabel(ylabel)
+        plt.xlabel(xlabel)
+        ax.legend()
+        plt.tight_layout()
+        pass
+
+    def get_prediction(self, N, n):
+        return array
 
 
 def logistic(x, a):
