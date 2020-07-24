@@ -138,7 +138,7 @@ class TrainingSetGenerator:
 
 
 if __name__ == "__main__":
-    Ns = [12]
+    Ns = [9, 10, 11]
     n_max = 6
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
     repetitions = 100
@@ -151,3 +151,8 @@ if __name__ == "__main__":
 
     # N=8, n=7, rep=100, first, 26s
     # N=8, n=7, rep=100, mid, 32s
+
+    # N=10, 76s/it
+    # N=11 414s/it rep=100 => 11h k=6, 10h k=3
+    # N=12
+# generated 100*6 samples each

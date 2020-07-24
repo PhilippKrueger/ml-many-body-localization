@@ -1,5 +1,6 @@
 from generate_training_set import TrainingSetGenerator, save_pickle
-from model_save_train import *
+# from model_save_train import *
+import numpy as np
 import time
 
 def generate_test_set(Ns, Ws, n_max, repetitions):
@@ -14,8 +15,8 @@ def generate_test_set(Ns, Ws, n_max, repetitions):
 
 
 if __name__ == "__main__":
-    Ns = [8]
-    Ws = np.arange(0., 4.0, 0.5)
-    repetitions = 2
+    Ns = [9, 10, 11]
+    Ws = np.arange(0., 8.0, 0.5)
+    repetitions = 10
     n_max = 7
     generate_test_set(Ns, Ws, n_max, repetitions)
