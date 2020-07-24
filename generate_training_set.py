@@ -14,7 +14,7 @@ def generate_training_set(Ns, Ws, n_max, repetitions):
         training_set_generator = TrainingSetGenerator(N, Ws, n_max, repetitions)
         print("Training Set N=" + str(N) + " completed after %s seconds." % (time.time() - start_time))
         for n in range(1, n_max + 1):
-            save_groundstate_figures(N, training_set_generator.training_set[n], n)
+            # save_groundstate_figures(N, training_set_generator.training_set[n], n)
             save_pickle("lanczos/training_sets/N" + str(N) + "n" + str(n) + "_Trainset",
                         training_set_generator.training_set[n])
     print("--- Training set generation lasted %s seconds ---" % (time.time() - start_time))
@@ -138,10 +138,10 @@ class TrainingSetGenerator:
 
 
 if __name__ == "__main__":
-    Ns = [12]
+    Ns = [9, 10, 11]
     n_max = 6
     Ws = [0.5, 8.0]  # 0.5 => ergodic/delocalized phase, 8.0 localized phase
-    repetitions = 500
+    repetitions = 100
     generate_training_set(Ns, Ws, n_max, repetitions)
 
     # N=09, n=7, rep=10 7s=> rep=500: 6 min
@@ -151,3 +151,8 @@ if __name__ == "__main__":
 
     # N=8, n=7, rep=100, first, 26s
     # N=8, n=7, rep=100, mid, 32s
+
+    # N=10, 76s/it
+    # N=11 414s/it rep=100 => 11h k=6, 10h k=3
+    # N=12
+# generated 100*6 samples each

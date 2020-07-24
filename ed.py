@@ -53,10 +53,10 @@ def gen_hamiltonian_lists(L, h, J=1):
     sx_list = gen_sx_list(L)
     sy_list = gen_sy_list(L)
     sz_list = gen_sz_list(L)
-
-    H = J*(sx_list[0] * sx_list[1] + sy_list[0] * sy_list[1] + sz_list[0] * sz_list[1]) - h[0]*sz_list[0]
+    H = sparse.csr_matrix((2 ** L, 2 ** L))
+    H = H - J*(sx_list[0] * sx_list[1] + sy_list[0] * sy_list[1] + sz_list[0] * sz_list[1]) - h[0]*sz_list[0]
     for i in range(1, L-1):
-        H += J*(sx_list[i] * sx_list[i+1] + sy_list[i] * sy_list[i+1] + sz_list[i] * sz_list[i+1]) - h[i]*sz_list[i]
+        H += - J*(sx_list[i] * sx_list[i+1] + sy_list[i] * sy_list[i+1] + sz_list[i] * sz_list[i+1]) - h[i]*sz_list[i]
     return H
 
 # fixme delete
