@@ -23,13 +23,14 @@ class ModelTrainer:
             filters = self.n*self.n
             model.add(layers.Conv2D(filters, (3, 3), activation='relu', input_shape=(np.shape(self.X_train[0])[0], np.shape(self.X_train[0])[1], 2)))
             model.add(layers.MaxPooling2D((4, 4)))
+            model.add(layers.Dropout(rate=0.1))
             model.add(layers.Flatten())
         else:
             model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
+            model.add(layers.Dropout(rate=0.1))
             model.add(layers.Dense(32, activation='relu')),
 
         model.add(layers.Dropout(rate=0.1))
-        # model.add(layers.Dense(32, activation='relu', bias_regularizer='l2'))
         model.add(layers.Dense(32, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -125,7 +126,7 @@ def plot_model_losses(Ns, n_max):
         losses = get_metric(train_val, Ns, n_max)
         ns = np.arange(1, n_max+1, 1)
         fig, ax = plt.subplots()
-        im = ax.imshow(losses, cmap='Purples')
+        im = ax.imshow(losses, cmap='Purples_r') #fixme plot again
         ax.set_xticks(np.arange(len(ns)))
         ax.set_yticks(np.arange(len(Ns)))
         ax.set_xticklabels(ns)
@@ -152,7 +153,7 @@ def plot_model_losses(Ns, n_max):
 
 
 if __name__ == "__main__":
-    Ns = [8]
+    Ns = [8, 9, 10, 11, 12]
     n_max = 6
     train_save_model(Ns, n_max,
                      batch_size=70,

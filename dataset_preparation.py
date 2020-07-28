@@ -82,6 +82,6 @@ def save_groundstate_figure(sample):  # reduced_rho, W, self.N, n, E, rep
 
 
 if __name__ == "__main__":
-    Ns = [8, 9, 10, 11]
+    Ns = [8, 9, 10, 11, 12]
     n_max = 6
     save_ground_state_figures(Ns, n_max)

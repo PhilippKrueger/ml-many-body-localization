@@ -60,7 +60,7 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for a different number of consecutive spins for the lowest energy eigenstate of the Heisenberg model with an additional random field in z-direction at low and high disorder strengths. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. This phase transition was predicted for all system sizes to be around $W_c = 1.5 J$ for the system sizes $L\in\{8, 9, 10, 11, 12\}$ and block sizes $n\in\left[1,6\right]$. Low block and system sizes suffered from a low accuracy and high losses in the machine learning model, whereas for $n>3$ block sizes the $W_c$ value showed smaller deviations from the theoretical value $W_c=3.5$. %todo: Finite size scaling? Entanglement entropy?
+The goal of this study was to find the quantum phase transition at intermediate local disorder strengths on a Heisenberg chain. Exact diagonalization was used to find the reduced density matrices for a different number of consecutive spins for the lowest energy eigenstate of the Heisenberg model with an additional random field in z-direction at low and high disorder strengths. The resulting dataset representing extended and localized phases was used to train a neural network. Afterwards, the trained network was applied on intermediate disorder strengths to deduct the critical disorder strength for a phase transition. This phase transition was predicted for all system sizes to be around $W_c = 2.5 J$ for the system sizes $L\in\{8, 9, 10, 11, 12\}$ and block sizes $n\in\left[1,6\right]$. Low block and system sizes suffered from low accuracy and high losses in the machine learning model, whereas for $n>3$ block sizes the $W_c$ value showed smaller deviations from a previously published theoretical value $W_c\approx3.6$ calculated with entanglement entropy on systems up to $L=22$. This deviation can be attributed to the effect of the smaller system sizes and the effect of open boundary conditions.
 \end{abstract}
 
 \maketitle
@@ -93,13 +93,13 @@ For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factor
 There are a few different ways of how to distinguish the ergodic and the localized regime by accessible metrics. 
 One can study spectral analysis, where the ergodic states are distributed like a Gaussian Orthogonal Ensemble (GOE), and the localized states follow a Poisson distribution.\cite{Laumann2014}
 
-Another interesting metric is the entaglement entropy, which indicates the information spread between different system parts\cite{Nandkishore_2015}. In the ergodic phase, the reduced density matrix $\rho_A$ of a ground state is expected to be thermal. This leads to a volume law scaling for the entanglement entropy\cite{Altman_2015}.	On the other hand, localized eigenstates show area-law scaling\cite{yu2019bulk}.
+Another interesting metric is the entaglement entropy, which indicates the information spread between different system parts.\cite{Nandkishore_2015} In the ergodic phase, the reduced density matrix $\rho_A$ of a ground state is expected to be thermal. This leads to a volume law scaling for the entanglement entropy.\cite{Altman_2015}	On the other hand, localized eigenstates show area-law scaling.\cite{yu2019bulk}
 %W—>0 : reduced matrix : thermal density matrix , volume law entanglement
 %W —> \infty : reduced density matrix: … , area law entanglement
 %n is finite and large enough
 %reduced density matrix would be different on two sides.
 
-In this study, we solve the Hamiltonian via exact diagonalization to predict the phase change by training a neural network with low and high disorder strengths, assuming that the resulting reduced density matrices represent an ergodic and localized phase respectively. To access the ground states, previous approaches made use of the shift-invert method \cite{Luitz2015}.
+In this study, we solve the Hamiltonian via exact diagonalization to predict the phase change by training a neural network with low and high disorder strengths, assuming that the resulting reduced density matrices represent an ergodic and localized phase respectively. To access the ground states, previous approaches made use of the shift-invert method \cite{Luitz2015}. The same paper suggests a critical disorder strength of $h_c=3.62$ for the same system by using the evolution of the entanglement entropy over different system sizes as an argument.
 
 
 %\begin{figure}
@@ -116,14 +116,14 @@ elements is non-zero.\cite{Weisse2008} An efficient method to find ground states
 
 \subsection{Reduced Density Matrix}
 
-The usefulness of reduced density matrices has already been shown by White in 1992 with ground states of Heisenberg chains \cite{White1992}. In our case we use areal density matrices as features for the neural network to predict the critical disorder strength of a phase change from delocalized to localized. The reduced density matrix is defined in equation \ref{red_density}. Physically, the reduced density matrix $\rho_A$, provides correct measurement statistics for subsystem A.
+The usefulness of reduced density matrices has already been shown by White in 1992 with ground states of Heisenberg chains.\cite{White1992} In our case we use areal density matrices as features for the neural network to predict the critical disorder strength of a phase change from delocalized to localized. The reduced density matrix is defined in equation \ref{red_density}. Physically, the reduced density matrix $\rho_A$, provides correct measurement statistics for subsystem A.
 
 \begin{eqnarray}
 \rho_{AB}&=&\ket{\psi_A}\bra{\psi_A}\otimes\ket{\psi_B}\bra{\psi_B}\\
 \rho_A&=&\text{Tr}_B(\rho_{AB})=\ket{\psi_A}\bra{\psi_A}\text{Tr}\left(\ket{\psi_B}\bra{\psi_B}\right)\label{red_density}
 \end{eqnarray}%\url{http://www.thphys.nuim.ie/staff/jvala/Lecture_9.pdf}
 
-The reduced density matrix was also used by Zhang in 2019 to learn the localization transition in disordered quantum Ising spin chains. Here, the motivation was to reduce the dimension and filter out redundant information. However, it proved to be inferior in comparison to the full density matrix in the analysis. \cite{Zhang2019} However, due to RAM limitations, we will rely on reduced density matrices.
+The reduced density matrix was also used by Zhang in 2019 to learn the localization transition in disordered quantum Ising spin chains. Here, the motivation was to reduce the dimension and filter out redundant information. However, it proved to be inferior in comparison to the full density matrix in the analysis.\cite{Zhang2019} However, due to RAM limitations, we will rely on reduced density matrices.
 
 
 \subsection{Artificial Neural Networks}
@@ -146,7 +146,7 @@ The strategy for implementation was as follows:
 
 Critical decisions and specifications for each steps are listed below. Afterwards, a brief motivation for the parameter range and resolution is given.
 
-\subsection{Eigenvalue solver}
+\subsection{Eigenvalue solver and shift invert method}
 
 For the eigenvalue solution, we use SciPy's method \texttt{eigsh}. However, the computation of eigenvalues near zero is computationally very costly and sometimes did not even converge during the standard maximum of iterations. 
 
@@ -162,7 +162,7 @@ that
 \left(A-\sigma M\right)^{-1}Mx = vx, \quad v=\frac{1}{\lambda-\sigma}.
 \end{equation}
 
-As we want to find the ground state, our choice for $\sigma$ is zero. The transformed eigenvalues will then satisfy $v=1/\lambda$, so our small eigenvalues  become large eigenvalues for which the Lanczos algorithm converges faster.\cite{Virtanen_2020} This method is also used as part of a efficient phase characterization method by Luitz in 2015 \cite{Luitz2015}.
+As we want to find the ground state, our choice for $\sigma$ is zero. The transformed eigenvalues will then satisfy $v=1/\lambda$, so our small eigenvalues  become large eigenvalues for which the Lanczos algorithm converges faster.\cite{Virtanen_2020} This method is also used as part of a efficient phase characterization method by Luitz in 2015.\cite{Luitz2015}
 
 \subsection{Computation of the reduced density matrix}
 
@@ -190,11 +190,11 @@ These lattice sites then serve as an input to the partial trace function, such t
 
 \subsection{Machine learning models and error metrics}\label{sec:nn}
 
-The decision for the machine learning framework \texttt{keras} was motivated by its flexibility and simplicity. \cite{chollet2015keras}
+The decision for the machine learning framework \texttt{keras} was motivated by its flexibility and simplicity.\cite{chollet2015keras}
 
 When setting up the machine learning model, one can already specify the first and last layer: The first (input) layer has to match the sample size of the incoming data, this can be already computed in advance. The length $len$ for block size $n$ is $2\cdot\left(2^n\times 2^n \right)$. The factor 2 comes from a preprocessing step, where the complex values are mapped to a second real picture, since the fitting procedure usually does not expect complex numbers. The last layer is a one node sigmoid, as the target output is the one-dimensional classification in $\left[0,1\right]$.
 
-For small sample sizes, there exist various approaches to choose the right amount of layers and regularization methods \cite{Olson2018,Feng2019}, which cannot be generalized, as they heavily depend on feature size and target dimension. 
+For small sample sizes, there exist various approaches to choose the right amount of layers and regularization methods, which cannot be generalized, as they heavily depend on feature size and target dimension.\cite{Olson2018,Feng2019}
 
 To balance off the trade between overfitting and loss, the starting point for the model was one hidden layer with 64 nodes. Since the reduced density matrices are similar to image classification and the inspection of the training set indicated that the density matrices had different slopes, a convolutional layer was employed for block sizes of $n<3$, as a $8x8$ picture seemed too small for kernel operations. To compensate the lacking layer, a dense layer of 32 nodes was chosen.
 
@@ -226,9 +226,9 @@ nearest = np.argmin(np.abs(y - 0.5))
 \subsection{Limitations for parameter range and resolution}\label{sec:param}
 
 \begin{enumerate}
-	\item System size $L$: Limited by computing time of eigenvalue solver. For the system size $L=12$, one calculation lasted approximately two minutes. In combination with the rest of overhead code dedicated to saving and loading data an acceptable sample size of 1200 samples could be generated over night.
+	\item System size $L$: Limited by computing time of eigenvalue solver. For the system size $L=12$, one calculation lasted approximately two minutes.
 	\item Block size $n$: We go up to $n=6$, which is half of the system size of the biggest system.
-	\item Sample size: 1200 samples can be generated for $L=12$, $n_{max}=6$ in approximately 15 hours on the provided machine. Assuming that the whole program should be reproducable in a reasonable time frame, this was found to be a sufficient sample size per system and block size.
+	\item Sample size: 2400 samples can be generated for $L=12$, $n_{max}=6$ in approximately 15 hours on the provided machine. Assuming that the whole program should be reproducable in a reasonable time frame, this was found to be a sufficient sample size per system and block size.
 	\item Disorder strength $W$ for the testing set: Since each point of a test set comes with a Hamiltonian with randomly drawn $h_i\in\left[-W,W\right]$, a decent amount of variance can be expected for the phase prediction. As we want to extract the phase change in general, and are not interested in the particular phase predictions of one specific Hamiltonian we choose to regularize the prediction by averaging over $180$ predicted samples.
 \end{enumerate}
 
@@ -245,13 +245,13 @@ The parameter range for the computation of the reduced density matrices can be f
 		Parameter & Range or Set \\
 		\hline
 		\hline 
-	\textbf{System size:} & $L \in \{9, 10, 11, 12\}$ \\ 
+	\textbf{System size:} & $L \in \{8, 9, 10, 11, 12\}$ \\ 
 		\textbf{Block size:} & $n \in \{1, 2, 3, 4, 5, 6\}$ \\ 
 		\textbf{Repetitions:} & $r=500$\\
 		\hline
 	\end{tabular} 
 	\caption{Parameter choice for training set generation}\label{tab:par_train}
-\end{table}%todo: Calculate/Plot Entanglement Entropy
+\end{table}
 
 In order to give some visual intuition, Figures \ref{fig:groundstates_loc} and \ref{fig:groundstates_erg} show realizations for different block sizes and phases.
 
@@ -308,32 +308,33 @@ if self.n > 3:
 	filters = self.n*self.n
 	model.add(layers.Conv2D(filters, (3, 3), activation='relu', input_shape=(np.shape(self.X_train[0])[0], np.shape(self.X_train[0])[1], 2)))
 	model.add(layers.MaxPooling2D((4, 4)))
+	model.add(layers.Dropout(rate=0.1))
 	model.add(layers.Flatten())
 else:
 	model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
+	model.add(layers.Dropout(rate=0.1))
 	model.add(layers.Dense(32, activation='relu')),
 
-model.add(layers.Dropout(rate=0.3)) # fixme not tested yet
-model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+model.add(layers.Dropout(rate=0.1))
+model.add(layers.Dense(32, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 \end{lstlisting}
 
-To prevent over-fitting, $30$ \% of the training set was used for validation. To avoid a biased split, we relied on \texttt{sklearn}'s method \texttt{train\_test\_split} that samples randomly from the training set. The employment of a drop out layer could not be found to improve the results.
+To prevent over-fitting, $30$ \% of the training set was used for validation. To avoid a biased split, we relied on \texttt{sklearn}'s method \texttt{train\_test\_split} that samples randomly from the training set. Two dropout layers granted a better regularization, such that the training set was not overfitted.
 	
-The model training was executed by using a batch size of 70 and 400 epochs, where the batch size was limited by the CPU performance and no significant loss or accuracy improvements where noted after 120 epochs.
+The model training was executed by using a batch size of 70 and 100 epochs, where the batch size was limited by the CPU performance and no significant loss or accuracy improvements where noted after $>100$ epochs.
 
-An example of the accuracy and loss dependency on the number of epochs for system size $L=10$, and block sizes $n=\{1, 6\}$ is presented below in Figure \ref{fig:accuracy_loss_epochs}.
+An example of the accuracy and loss dependency on the number of epochs for system size $L=8$, and block sizes $n=\{1, 6\}$ is presented below in Figure \ref{fig:accuracy_loss_epochs}.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\linewidth]{../results/accuracy_loss_epochs/N8n6_accuracy_loss_epochs}
+	\includegraphics[width=\linewidth]{../results/accuracy_loss_epochs/N8n4_accuracy_loss_epochs}
 	\caption{Accuracy and loss evolution over training epochs.}
 	\label{fig:accuracy_loss_epochs}
 \end{figure}
-%todo: describe overfitting
 
-Figure \ref{fig:accuracy_loss_epochs} illustrates that the model is still not completely prone to overfitting. This can be accounted to the big model size in comparison to the sample size. Still, the accuracy reaches an acceptable optimum after 100 training epochs.%todo: number epochs optimum
+Figure \ref{fig:accuracy_loss_epochs} illustrates that the model is still not completely prone to overfitting. This can be accounted to the big model size in comparison to the sample size. Still, the loss stagnated at an acceptable optimum after 100 training epochs for all block and sytem sizes. The validation loss was the lowest for large system sizes and intermediate block sizes. 
 
 \begin{figure}[h!]
 	\centering
@@ -342,8 +343,6 @@ Figure \ref{fig:accuracy_loss_epochs} illustrates that the model is still not co
 	\label{fig:all_validation_accuracy}
 \end{figure}
 
-The validation accuracy was highest for large system sizes and large block sizes. The reason for that is probably that most entries of the density matrices are zero, which has a bigger impact on the network for larger block sizes and therefore on density matrices.
-%todo: compare with entaglement entropy
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{../results/accuracy_loss_epochs/all_validation_losses}
@@ -351,107 +350,106 @@ The validation accuracy was highest for large system sizes and large block sizes
 	\label{fig:all_validation_accuracy}
 \end{figure}
 
-The validation losses in Figure \ref{fig:all_validation_accuracy} tell a similar story. Here, intermediate block sizes of $n=\{3, 4\}$ show the lowest validation loss. In the intermediate regime, the density matrices have a reasonable trade off between level of detail and number of weights in the neural network, since the first layer must match the input dimensions.
+The validation losses in Figure \ref{fig:all_validation_accuracy} tell a similar story. Here, intermediate block sizes of $n=\{3, 4, 5, 6\}$ show the lowest validation loss. In the intermediate regime, the density matrices have a reasonable trade off between level of detail and number of weights in the neural network, since the first layer must match the input dimensions.
 
 In conclusion, large system sizes and intermediate block sizes showed the best results. In addition, one can safely disregard predictions by models for block size $n=1$.
 
 \subsection{Analysis of critical disorder strength}
 \subsubsection{Dependency on block size}
-At first, the testing set was generated. Following the parameter discussion in section \ref{sec:param}, we generated 180 samples for each $W\in\left[0,4\right]$, with step $\Delta W=0.5$, resulting in 1440 samples per system and block size. Afterwards, the predictions were fitted with a logistic function to obtain $W_c$ as described in section \ref{sec:wcextract}.
-Five predicted phases are averaged at each point and plotted onto a heat map. The fitted $W_c$ is plotted in addition to that in Figure \ref{fig:wcextractn}.
+At first, the testing set was generated. Following the parameter discussion in section \ref{sec:param}, we generated 180 samples for each $W\in\left[0,4\right]$, with step $\Delta W=0.5$, resulting in 1440 samples per system and block size. Afterwards, $W_c$ was obtained as described in section \ref{sec:wcextract}.
+180 predicted phases are averaged at each point and plotted onto a heat map. $W_c$ is plotted in addition to that in Figure \ref{fig:wcextractn}.
 
-\onecolumngrid
-\begin{center}%todo: annotate colorbar
-	\begin{figure}[H]
+%\onecolumngrid
+\begin{center}
+	\begin{figure}[hb!]
 		\centering	
-		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N8_Wc_n_dependency.pdf}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth, trim={0 2cm 0 3cm},clip]{../results/Wc/N8_Wc_n_dependency.pdf}
 			\subcaption{$L=8$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N9_Wc_n_dependency.pdf}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth, trim={0 2cm 0 3cm},clip]{../results/Wc/N9_Wc_n_dependency.pdf}
 			\subcaption{$L=9$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N10_Wc_n_dependency.pdf}
+	\end{figure}
+	\begin{figure}[ht!]\ContinuedFloat
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth, trim={0 2cm 0 3cm},clip]{../results/Wc/N10_Wc_n_dependency.pdf}
 			\subcaption{$L=10$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N11_Wc_n_dependency.pdf}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth, trim={0 2cm 0 3cm},clip]{../results/Wc/N11_Wc_n_dependency.pdf}
 			\subcaption{$L=11$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.45\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/N12_Wc_n_dependency.pdf}
+		\begin{subfigure}[c]{0.4\textwidth}
+			\includegraphics[width=\textwidth, trim={0 2cm 0 3cm},clip]{../results/Wc/N12_Wc_n_dependency.pdf}
 			\subcaption{$L=12$}
 		\end{subfigure}
 		\caption{Dependency of the phase transition on block size $n$ for different system sizes.}
 		\label{fig:wcextractn}
 	\end{figure}
 \end{center}
-\twocolumngrid
+%\twocolumngrid
 
-In conclusion, the predicted critical disorder strength $W_c$ decayed, when models with larger block sizes $n$ were used for prediction. The low $W_c$ values for $n=\{1,2\}$ might just as well be attributed to the poor loss and accuracy values shown in section \ref{sec:loss_acc}. An explanation for this decay might be that a bigger block size can more accurately reflect the level of disorder forced on the system. For smaller block sizes, for some spins the information is lost whether the configuration was the result of interacting lattice sites or the random disorder strength.
+In conclusion, the predicted critical disorder strength $W_c$ decayed, when models with larger block sizes $n$ were used for prediction. On average, the extracted critical disorder strength was around $W_c=2.5J$.
 
 \subsubsection{Dependency on system size}
 
-%todo: look at entropy plots of paper and replicate them!
+Now, we rearrange the data, such that we can see the dependency on the system size by ordering each prediction set first by block size and plot them over system size. 
 
-%todo: write
-
-
-\onecolumngrid
+%\onecolumngrid
 \begin{center}
-	\begin{figure}[H]
+	\begin{figure}[h]
 		\centering	
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n1_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n1_Wc_N_dependency.pdf}
 			\subcaption{$n=1$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n2_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n2_Wc_N_dependency.pdf}
 			\subcaption{$n=2$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n3_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n3_Wc_N_dependency.pdf}
 			\subcaption{$n=3$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n4_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n4_Wc_N_dependency.pdf}
 			\subcaption{$n=4$}
 		\end{subfigure}
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n5_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n5_Wc_N_dependency.pdf}
 			\subcaption{$n=5$}
 		\end{subfigure}
+	\end{figure}
+	\begin{figure}[h]\ContinuedFloat
 		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n6_Wc_N_dependency.pdf}
+			\includegraphics[width=\textwidth, trim={0 3cm 0 3cm},clip]{../results/Wc/n6_Wc_N_dependency.pdf}
 			\subcaption{$n=6$}
 		\end{subfigure}
 		\caption{Dependency of the phase transition over system sizes $L$ for different block sizes $n$.}
 		\label{fig:wcextract}
 	\end{figure}
 \end{center}
-\twocolumngrid
-%todo: compare with introduction
+%\twocolumngrid
 
+In comparison to the previous Figure, one can now see the dependency on the system size.
+If we look at block size $n=1$, we can see again that the predicitons are not as well defined as for the other block sizes. This weakness can be tracked back to the low validation accuracy of $n=1$ models, which originated from the reduced density matrices being very similar for the ergodic and localized phase.
+
+The plots are showing a near to constant dependency on the system size.
 %W—>0 : reduced matrix : thermal density matrix , volume law entanglement
 %W —> \infty : reduced density matrix: … , area law entanglement
 %n is finite and large enough
 %reduced density matrix would be different on two sides.
-%todo: Finite Scaling
 
+\section{Conclusion and Outlook}
 
-The plots are indicating that a bigger system size requires a larger disorder strength to perform the phase transition.
+In summary, the training set generation could be solved efficiently by employing the shift invert method in combination with the lanczos algorithm. The visual inspection of the density matrices showed that the ergodic phase is more thermalized than the localized phase as expected. Of course, the neural network still requires some tuning. Even though high accuracies were demonstrated, the validation loss was almost an order of magnitude higher than the training loss. An exception can be made for the block size $n=1$, which was found to be very hard to classify, as the thermalization did not have big enough of an impact to the input data.
+However, the predicitons for intermediate disorder strength showed that a region for the phase transition could successfully be found for all block and system sizes. The classification accuracy outside of the phase transition was almost 100\%. 
 
+Finally, the extracted critical disorder was hard to classify for a block size of $n=1$, and did not vary much for block sizes $n=\{4,5,6\}$. In the system size analysis, block size $n=4$ had the least deviations. In the analysis no clear trend was found with respect to finite size scaling. This would probably change if more effort on training set generation could be made. The here presented results can completely be generated within 24h on an average computer, which sets a clear constraint.
 
-\section{Conclusion}
-
-$W_c$ depends on n, L (yes/no).
-
-$W_c$ prediction coincides with the expectation (yes/no)
-
-$W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
-%todo: write conclusion
+Still, a phase change could be consistently observed around $W_c=2.5$, deviating slightly from the result $W_c\approx3.6$ in Luitz et al. 2015 for larger system up to $L=22$.\cite{Luitz2015} It is expected that smaller systems with open boundary conditions show a smaller disorder strength, as fluctuations are not surpressed as much.
 
 \bibliography{zotero}
 %\bibliography{bibsamp}% Produces the bibliography via BibTeX.
@@ -462,19 +460,23 @@ $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
 
 \begin{widetext}
 \section{Code listing} \label{app:codes}
-%todo: add github permanent link
-The process consists essentially of five different steps, which can be called through a main function, but can also be run separately. Every file serves a number of different purposes as listed below.%todo: add flowchart and folder structure
+The process can be broken down into five different steps, which can be all be executed through a main function, but can also be run separately: Generation of the training set, model training, generation if the testing set, generating predictions. Every file serves a number of different purposes as listed below. In general, the time for each step is estimated and logged to the console, such that the user can easily narrow down the parameter range for his own system.
+
+To replicate the results, you can access the whole code and all plots at \url{https://gitlab.lrz.de/phkrueger/final-project-ph2264.git}. The tutors of PH2264 have been given guest access. Interested readers will be given access by contacting me via \url{ph.krueger@tum.de}.
 
 \begin{enumerate}
+	\item \textbf{main.py}: Executes the whole pipeline.
 	\item \textbf{generate\_training\_set.py}: Here, the training set is generated and some example plots of ground states are saved to the results folder. The training sets are saved in the \texttt{training\_sets} folder, where they are numbered with their system and block size.
 	\item \textbf{ed.py}: The training set is generated by using the functions from the tutorial. A new function was added that generates the Hamiltonian using the random local disorder strength.
 	\item \textbf{dataset\_preparation.py}: While this file contains many important functions to preprocess and label the training and testing sets and load and save functions, it also has a method that plots the visualizations of a few ground states.
 	\item \textbf{model\_save\_train.py}: First, models are generated that automatically match the input data of different block sizes $n$, afterwards, they are trained with a certain amount of epochs and batch sizes. The history of the validation and accuracy is plotted individually into the results folder.
 	\item \textbf{generate\_test\_set.py}: A set of reduced density matrices for ground states in the intermediate regime is generated.
-	%todo: plot state near W=1
 	\item \textbf{generate\_predictions.py}: The test sets are fed into the trained machine learning models. The predicted phases are averaged for every W, n, N combination and saved into a prediction dataset.
 	\item \textbf{plot\_wc\_dependency.py}: The predictions are loaded, we extract $W_c$ and plot everything together as a heat map over system and block sizes.
 \end{enumerate}
+
+\subsection{Pipeline execution}
+\lstinputlisting[language=Python]{../main.py}
 
 \subsection{Training set generation}
 \lstinputlisting[language=Python]{../generate_training_set.py}
