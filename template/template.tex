@@ -72,25 +72,13 @@ The physical model and the concept of exact diagonalization is presented first. 
 %Why is the topic interesting? => Finding Wc?
 \subsection{Physical model}
 
-\subsubsection{Hamiltonian of the Heisenberg model}
+\subsubsection{Hamiltonian of the Heisenberg model and physical expectation}
 
 The Hamiltonian of the Heisenberg model is shown in equation \ref{hamiltonian}. In the course of further analysis, we choose $J=1$ and sample $h$ from a uniform distribution such that $h_i \in \left[-W, W\right]$.
 
 \begin{equation}
 	H=\underbrace{J\sum_i \vec{S}_i\cdot\vec{S}_{i+1}}_{\text{Exchange Energy}}-\underbrace{\sum_ih_iS_i^z}_{\text{Random Field}}\label{hamiltonian}
 \end{equation}
-
-\subsubsection{Characterization of ergodic and localized regimes}
-%todo: talk about expectations and other paper
-\url{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.91.081103}\cite{Luitz2015}
-
-%W—>0 : reduced matrix : thermal density matrix , volume law entanglement
-%W —> \infty : reduced density matrix: … , area law entanglement
-%n is finite and large enough
-%reduced density matrix would be different on two sides.
-%
-
-
 
 The expectation for the ground state is dependent on the ratio of the coupling and the local random field. 
 
@@ -99,6 +87,20 @@ Here, the reduced density operator of a finite subsystem converges to the equili
 for $L\rightarrow\infty$.\cite{Pal2010}
 
 For $\frac{W}{J} \gg 1$, we can expect a localized phase, since the $h_i$ factors dominate over the exchange energy. The resulting states are expected to be product states of spins "up" or "down", as the external field points in z-direction. Also an infinite system cannot equilibrate itself. The local configurations are set by the initial conditions at all times and are adiabatically connected to the trivial state.\cite{Pal2010}
+
+\subsubsection{Characterization of ergodic and localized regimes by different metrics}
+
+There are a few different ways of how to distinguish the ergodic and the localized regime by accessible metrics. 
+One can study spectral analysis, where the ergodic states are distributed like a Gaussian Orthogonal Ensemble (GOE), and the localized states follow a Poisson distribution.\cite{Laumann2014}
+
+Another interesting metric is the entaglement entropy, which indicates the information spread between different system parts\cite{Nandkishore_2015}. In the ergodic phase, the reduced density matrix $\rho_A$ of a ground state is expected to be thermal. This leads to a volume law scaling for the entanglement entropy\cite{Altman_2015}.	On the other hand, localized eigenstates show area-law scaling\cite{yu2019bulk}.
+%W—>0 : reduced matrix : thermal density matrix , volume law entanglement
+%W —> \infty : reduced density matrix: … , area law entanglement
+%n is finite and large enough
+%reduced density matrix would be different on two sides.
+
+In this study, we solve the Hamiltonian via exact diagonalization to predict the phase change by training a neural network with low and high disorder strengths, assuming that the resulting reduced density matrices represent an ergodic and localized phase respectively. To access the ground states, previous approaches made use of the shift-invert method \cite{Luitz2015}.
+
 
 %\begin{figure}
 %	\centering
@@ -204,7 +206,7 @@ For a two label classification problem, it is useful to use cross-entropy as a l
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/cross_entropy}
-\caption{Cross-Entropy Loss}
+\caption{Example for cross-entropy loss depending on the predicted probability of $\hat{y}=1$.}
 \label{fig:cross_entropy}
 \end{figure}
 The definition for a two class cross-entropy loss can be found in equation \ref{cross-loss}, where $y \in \{0,1\}$ is the true class and $\hat{y}\in\left[0,1\right]$ the predicted probability. This loss is also plotted in Figure \ref{fig:cross_entropy}.
@@ -258,7 +260,7 @@ The parameter range for the computation of the reduced density matrices can be f
 		\hline
 	\end{tabular} 
 	\caption{Parameter choice for training set generation}\label{tab:par_train}
-\end{table}
+\end{table}%todo: Calculate/Plot Entanglement Entropy
 
 In order to give some visual intuition, the Figures \ref{fig:groundstates_loc} and \ref{fig:groundstates_erg} show realizations for different block sizes and phases.
 
@@ -278,11 +280,11 @@ In order to give some visual intuition, the Figures \ref{fig:groundstates_loc} a
 			\includegraphics[width=\linewidth]{../results/groundstates/N10n1_trainingset_groundstate_Wmax8.0}
 			\subcaption{Visualization of the ground state for the minimal block size $n=1$ in the localized phase.}
 		\end{subfigure}
-		\caption{Ground states for different block sizes $n$ and different phases.}
+		\caption{Ground states for different block sizes $n$ and phases.}
 		\label{fig:groundstates_loc}
 \end{figure}
 \end{center}
-\begin{center}%todo: annotate colorbar
+\begin{center}
 	\begin{figure}[h!]
 		\begin{subfigure}[c]{0.45\textwidth}
 			\includegraphics[width=\linewidth]{../results/groundstates/N10n6_trainingset_groundstate_Wmax0.5}
@@ -296,53 +298,14 @@ In order to give some visual intuition, the Figures \ref{fig:groundstates_loc} a
 			\includegraphics[width=\linewidth]{../results/groundstates/N10n1_trainingset_groundstate_Wmax0.5}
 			\subcaption{Visualization of the ground state for the minimal block size $n=1$ in the ergodic phase.}
 		\end{subfigure}
-		\caption{Ground states for different block sizes $n$ and different phases.}
+		\caption{Ground states for different block sizes $n$ and phases.}
 		\label{fig:groundstates_erg}
 	\end{figure}
 \end{center}
 %\twocolumngrid
 
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{../results/groundstates/N10n6_trainingset_groundstate_Wmax0.5}
-%	\caption{Visualization of the ground state for a large block size $n=6$ in the ergodic phase.}
-%	\label{fig:N10n6_trainingset_groundstate_Wmax0}
-%\end{figure}
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{../results/groundstates/N10n6_trainingset_groundstate_Wmax8.0}
-%	\caption{Visualization of the ground state for a large block size $n=6$ in the localized phase.}
-%	\label{fig:N10n6_trainingset_groundstate_Wmax8}
-%\end{figure}
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=\linewidth]{../results/groundstates/N10n4_trainingset_groundstate_Wmax0.5}
-%\caption{Visualization of the ground state for an intermediate block size $n=4$ in the ergodic phase.}
-%\label{fig:N10n4_trainingset_groundstate_Wmax0}
-%\end{figure}
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{../results/groundstates/N10n4_trainingset_groundstate_Wmax8.0}
-%	\caption{Visualization of the ground state for an intermediate block size $n=4$ in the localized phase.}
-%	\label{fig:N10n4_trainingset_groundstate_Wmax8}
-%\end{figure}
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{../results/groundstates/N10n1_trainingset_groundstate_Wmax0.5}
-%	\caption{Visualization of the ground state for the minimal block size $n=1$ in the ergodic phase.}
-%	\label{fig:N10n1_trainingset_groundstate_Wmax0}
-%\end{figure}
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{../results/groundstates/N10n1_trainingset_groundstate_Wmax8.0}
-%	\caption{Visualization of the ground state for the minimal block size $n=1$ in the localized phase.}
-%	\label{fig:N10n1_trainingset_groundstate_Wmax8}
-%\end{figure}
+The visual inspection indicates that the density matrix of the localized phase has a sharp maximum at the preferred state that is forced by the random disorder strength. The extended phase shows a sparse but certainly more even distribution, which reflects that still some configurations are more preferred than others induced by the coupling term in the Hamiltonian. The biggest maxima are likely still influenced by the random disorder strength. Another observation is that the density matrix reductions of the full ground state conserved these properties for $n>2$, when comparing $n=6$ to $n=\left[2,5\right]$. The similarity between the two phases gets smaller the smaller the block size $n$. For $n=1$, one could argue that the density matrices are very similar, as they only deviate for half of the matrix elements. In conclusion, the ergodic reduced density matrix shows far more thermalization than the localized one.
 
-The visual inspection indicates that the density matrix of the localized phase has a sharp maximum at the preferred state that is forced by the random disorder strength. The extended phase shows a sparse but certainly more even distribution, which reflects that still some configurations are more preferred than others induced by the coupling term in the Hamiltonian. The biggest maxima are likely still influenced by the random disorder strength. Another observation is that the density matrix reductions of the full ground state conserved these properties for $n>2$, when comparing $n=6$ to $n=\{6,5,4,3,2\}$. The similarity between the two phases gets smaller the smaller the block size $n$. For $n=1$, one could argue that the density matrices are very similar, as they only deviate for half of the matrix elements.
-
-\newpage
 \subsection{Model training}\label{sec:loss_acc}
 
 Before we can predict the phase of a newly generated test set, we have to train the neural network with our available training data. For each system and block size a separate model was trained, as a different system size might influence the physical behavior due to open boundary conditions.
@@ -404,9 +367,9 @@ The validation accuracy was highest for large system sizes and large block sizes
 	\label{fig:all_validation_accuracy}
 \end{figure}
 
-The overall losses for $n>1$ where always found to be $\approx 0.01$ with accuracies of $1.0$, whereas the models at $n=1$ showed larger losses of  $\approx 0.1$ and mostly acceptable accuracies near $1$.
+The validation losses in Figure \ref{fig:all_validation_accuracy} tell a similar story. Here, intermediate block sizes of $n=\{3, 4\}$ show the lowest validation loss. In the intermediate regime, the density matrices have a reasonable trade off between level of detail and number of weights in the neural network, since the first layer must match the input dimensions.
 
-Figure \ref{fig:val_acc} illustrates that not only the scores for small block sizes were lower, but also the convergence rates. In conclusion, the scores show that the learning of the phases was prone to severe over-fitting and resulted in acceptable scores for the next step of prediction, where $n=1$ can be expected to have a worse performance during the prediction. This behavior was expected, when we notized the similarity for $n=1$ block size samples in the training set.
+In conclusion, large system sizes and intermediate block sizes showed the best results. In addition, one can safely disregard predictions by models for block size $n=1$.
 
 \subsection{Analysis of critical disorder strength}
 \subsubsection{Dependency on block size}
@@ -445,7 +408,9 @@ Five predicted phases are averaged at each point and plotted to a heat map. The 
 
 In conclusion, the predicted critical disorder strength $W_c$ decayed, when models with larger block sizes $n$ were used for prediction. The low $W_c$ values for $n=\{1,2\}$ might just as well be attributed to the poor loss and accuracy values shown in section \ref{sec:loss_acc}. An explanation for this decay might be that a bigger block size can more accurately reflect the level of disorder forced on the system. For smaller block sizes, for some spins the information is lost whether the configuration was the result of interacting lattice sites or the random disorder strength.
 
-\subsubsection{Dependeny on system size}
+\subsubsection{Dependency on system size}
+
+%todo: look at entropy plots of paper and replicate them!
 
 something something%todo: write
 
@@ -478,10 +443,6 @@ something something%todo: write
 			\includegraphics[width=\textwidth]{../results/Wc/n6_Wc_N_dependency.pdf}
 			\subcaption{$n=6$}
 		\end{subfigure}
-		\begin{subfigure}[c]{0.4\textwidth}
-			\includegraphics[width=\textwidth]{../results/Wc/n7_Wc_N_dependency.pdf}
-			\subcaption{$n=7$}
-		\end{subfigure}
 		\caption{Dependency of the phase transition over system sizes $L$ for different block sizes $n$.}
 		\label{fig:wcextract}
 	\end{figure}
@@ -499,7 +460,7 @@ something something%todo: write
 The plots are indicating that a bigger system size requires a larger disorder strength to perform the phase transition.
 
 
-\section{Conclusion}%todo: Action title
+\section{Conclusion}
 
 $W_c$ depends on n, L (yes/no).
 
@@ -517,6 +478,7 @@ $W_c$ is dependent on these and that effects => scaling analysis? (yes/no)
 
 \begin{widetext}
 \section{Code listing} \label{app:codes}
+%todo: add github permanent link
 The process consists essentially of five different steps, which can be called through a main function, but can also be run separately. Every file serves a number of different purposes as listed below.%todo: add flowchart and folder structure
 
 \begin{enumerate}

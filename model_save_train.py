@@ -41,7 +41,9 @@ class ModelTrainer:
         pass
 
     def fit_model(self, batch_size, epochs):
-        csv_logger = callbacks.CSVLogger(set+"/models/N"+str(self.N)+"n"+str(self.n)+"_model_loss.csv", separator=",", append=False)
+        csv_logger = callbacks.CSVLogger("lanczos/models/N"+str(self.N)+"n"+str(self.n)+"_model_loss.csv",
+                                         separator=",",
+                                         append=False)
         history = self.model.fit(self.X_train, self.y_train,
                        batch_size=batch_size,
                        epochs=epochs,
@@ -93,18 +95,18 @@ def train_save_model(Ns, n_max, batch_size, epochs):
     for N in Ns:
         start_model_time = time.time()
         for n in trange(1, n_max+1):
-            X, y = preprocess_training_data(set+"/training_sets/N"+str(N)+"n"+str(n)+"_Trainset")
+            X, y = preprocess_training_data(str("lanczos/training_sets/N"+str(N)+"n"+str(n)+"_Trainset"))
             model_trainer = ModelTrainer(X, y, N, n)
             history = model_trainer.fit_model(batch_size=batch_size,
                                               epochs=epochs)
             model_trainer.training_history(history, n, N)
-            model_trainer.save_model(set+"/models/N"+str(N)+"n"+str(n)+"_Model")
+            model_trainer.save_model("lanczos/models/N"+str(N)+"n"+str(n)+"_Model")
         print("--- Model trainings for N=" + str(N) + " lasted %s seconds ---" % (
                         time.time() - start_model_time))
     print("--- Model training lasted %s seconds ---" % (time.time() - start_time))
     pass
 
-def get_metric(metric):
+def get_metric(metric, Ns, n_max):
     """
     :param metric: 0:epoch, 1:acc, 2:loss, 3:val_acc, 4:val_loss
     :return: metric values per system and block size
@@ -112,15 +114,15 @@ def get_metric(metric):
     values = np.zeros((len(Ns), n_max))
     for N in range(0, len(Ns)):
         for n in range(0, n_max):
-            path = set + "/models/N" + str(min(Ns) + N) + "n" + str(n + 1) + "_model_loss.csv"
+            path = "lanczos/models/N" + str(min(Ns) + N) + "n" + str(n + 1) + "_model_loss.csv"
             my_data = genfromtxt(path, delimiter=',')
             values[N, n] = float(my_data[-1, metric])  # val loss 4
     return values
 
-def plot_model_losses(Ns, n_max, set):
+def plot_model_losses(Ns, n_max):
     titles = ["Epochs", "Training accuracy", "Training losses", "Validation accuracy", "Validation losses"]
     for train_val in [1, 2, 3, 4]:
-        losses = get_metric(train_val)
+        losses = get_metric(train_val, Ns, n_max)
         ns = np.arange(1, n_max+1, 1)
         fig, ax = plt.subplots()
         im = ax.imshow(losses, cmap='Purples')
@@ -152,7 +154,6 @@ def plot_model_losses(Ns, n_max, set):
 if __name__ == "__main__":
     Ns = [8, 9, 10, 11]
     n_max = 6
-    set = "lanczos"
     # train_save_model(Ns, n_max,
     #                  batch_size=70,
     #                  epochs=100)
