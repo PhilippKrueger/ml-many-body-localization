@@ -3,10 +3,23 @@
 **Instructions to replicate results**
 
 1. Clone the project.
-2. Install requirements.
-3. Run ``main.py``.
+2. Install requirements with ``pip install -r requirements.txt``.
+3. Run ``main.py`` and set your preferred parameters for each step.
+``Ns``: system sizes, 
+``n_max`` or ``ns``: maximum block size/list of block sizes, 
+``Ws``: list of tested disorder strengths, 
+``repetitions``: amount of samples that is multiplied by the factor of different used Ws, number of used Eigenvalues, system sizes and block sizes.
+    - The model will generate training data into the folder ``lanczos/training_sets``
+    - The testing set will be saved to ``lanczos/testing_sets``
+    - The trained models will be saved to ``lanczos/models``
+    - The averaged prediction data will be saved to ``lanczos/avg_prediction_sets``
 4. Look for plots in the ``/results`` folder.
-
+    - ``results/accuracy_loss_epochs`` contains summary plots of all losses and 
+    accuracies and also individual performances over epochs.
+    - ``results/accuracy_loss_epochs`` contains vizualizations of the ground state density matrices
+    for each block and system size.
+    - ``results/Wc`` contains the heat map plots that show the phase transitions.
+    
 **Original Task**:
 
 Use exact diagonalization to obtain all eigenstates of the the Heisenberg model with a
@@ -38,20 +51,3 @@ the results depend on system size L and block size n? At which
 <img src="https://render.githubusercontent.com/render/math?math=W_c ">
 do you expect the
 transition to occur?
-
-**Steps:**
-
-Implementation of the following functions:
-1. Function: Generate random disorder strength using a uniform distribution
-2. Function: Generate Hamiltonian from disorder strength and system size
-3. Define and understand phase transition from extended phase to localized phase
-4. Function: Picks a number M of lowest eigenstates near Energy E = 0
-5. Function: Generate density matrix for an eigenstate
-6. Function: Visualize density matrices
-7. Function: Set up machine learning model that takes density matrices of different W as an input, 
-and predicts whether the state represents an extended or a localized phase.
-8. Function: Make predictions for different system sizes L and block sizes n.
-9. Function: Plot the predicitons over W.
-10. Function: Extract 
-<img src="https://render.githubusercontent.com/render/math?math=W_c ">
-from the data.
