@@ -28,11 +28,11 @@ class ModelTrainer:
             model.add(layers.Flatten(input_shape=(np.shape(self.X_train)[1], np.shape(self.X_train)[1], 2)))
             model.add(layers.Dense(32, activation='relu')),
 
-        model.add(layers.Dropout(rate=0.3)) # fixme not tested yet
-        model.add(layers.Dense(64, activation='relu', bias_regularizer='l2'))
+        model.add(layers.Dropout(rate=0.1))
+        # model.add(layers.Dense(32, activation='relu', bias_regularizer='l2'))
+        model.add(layers.Dense(32, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-        # model.summary()
         return model
 
     def score(self):
@@ -152,9 +152,9 @@ def plot_model_losses(Ns, n_max):
 
 
 if __name__ == "__main__":
-    Ns = [8, 9, 10, 11]
+    Ns = [8]
     n_max = 6
-    # train_save_model(Ns, n_max,
-    #                  batch_size=70,
-    #                  epochs=100)
-    plot_model_losses(Ns, n_max, set)
+    train_save_model(Ns, n_max,
+                     batch_size=70,
+                     epochs=100)
+    plot_model_losses(Ns, n_max)

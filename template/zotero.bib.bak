@@ -252,4 +252,13 @@
   url       = {http://dx.doi.org/10.1146/annurev-conmatphys-031214-014701},
 }
 
+@Misc{yu2019bulk,
+  author        = {Xiongjie Yu and David Pekker and Bryan K. Clark},
+  title         = {Bulk Geometry of the Many Body Localized Phase from Wilson-Wegner Flow},
+  year          = {2019},
+  archiveprefix = {arXiv},
+  eprint        = {1909.11097},
+  primaryclass  = {cond-mat.str-el},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
