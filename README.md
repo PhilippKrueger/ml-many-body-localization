@@ -1,5 +1,7 @@
 # Machine Learning of Many Body Localization
 
+Documentation is found in report.pdf
+
 **Instructions to replicate results**
 
 1. Clone the project.
